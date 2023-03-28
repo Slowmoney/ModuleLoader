@@ -3,7 +3,7 @@
 #include <iostream>
 #include <unordered_set>
 #include <SDK.h>
-
+#define MODULE_TYPE "test"
 
 class TestResourceImpl : public core::IResource::Impl {
 public:
@@ -48,12 +48,14 @@ public:
 };
 
 
-EXPORT bool moduleMain(core::ICore* server) {
+EXPORT bool altMain(core::ICore* server) {
         std::cout << __FILE__ << std::endl;
         core::ICore::SetInstance(server);
         auto& runtime = TestScriptRuntime::Instance();
 
-        core::ICore::Instance().RegisterScriptRuntime("test", &runtime);
+        core::ICore::Instance().RegisterScriptRuntime(MODULE_TYPE, &runtime);
+        //std::cout << core::ICore::Instance().GetResource("test_module")->GetType() << std::endl;
+        
         //TestResourceImpl::
         //core::ICore::Instance().Resolve()
         //core::ILocalStorage* storage = core::ICore::Instance().GetLocalStorage();
@@ -67,3 +69,7 @@ EXPORT bool moduleMain(core::ICore* server) {
     }
 
 
+EXPORT const char* GetType()
+{
+    return MODULE_TYPE;
+}

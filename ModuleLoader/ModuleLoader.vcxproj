@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExternalIncludePath>C:\Users\Yaroslav\source\repos\ModuleLoader\SDK;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\deps;C:\Users\Yaroslav\source\repos\ModuleLoader\SDK;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -107,6 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,15 +132,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ModuleLoader.cpp" />
+    <ClCompile Include="TomlConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h" />
     <ClInclude Include="LocalStorage.h">
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>
+    <ClInclude Include="Module.h" />
     <ClInclude Include="Package.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScriptRuntime.h" />
+    <ClInclude Include="TomlConfig.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

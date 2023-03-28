@@ -5,7 +5,7 @@
 namespace core {
 	class Resource : IResource {
 	public:
-		Resource(CreationInfo info, HINSTANCE hModule) : info(info), hModule(hModule) {};
+		Resource(CreationInfo info) : info(info) {};
 
 		virtual Impl* GetImpl() const override {
 			return impl;
@@ -20,13 +20,12 @@ namespace core {
 		virtual const std::string& GetPath() const override { return info.name; };
 		virtual const std::string& GetMain() const override { return info.main; };
 		bool started = false;
-		HINSTANCE hModule;
 		Impl* impl = NULL;
 		IScriptRuntime* runtime = NULL;
 		CreationInfo info;
+		Config::Value::ValuePtr config;
 	protected:
 		virtual ~Resource() override {
-			::FreeLibrary(hModule);
 			std::cout << "~Resource" << std::endl;
 			runtime->OnDispose();
 			delete runtime;

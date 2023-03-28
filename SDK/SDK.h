@@ -18,6 +18,7 @@
 
 #endif // _WIN32
 #include <string>
+#include "deps/ConfigBase.h"
 #include "IPackage.h"
 #include "IResource.h"
 #include "IScriptRuntime.h"

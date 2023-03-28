@@ -33,5 +33,8 @@
     <ClInclude Include="IPackage.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="deps\ConfigBase.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

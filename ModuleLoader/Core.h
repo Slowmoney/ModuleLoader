@@ -34,37 +34,45 @@ namespace core {
 		}
 
 		virtual bool RegisterScriptRuntime(const std::string& resourceType, IScriptRuntime* runtime) override {
-			std::cout << "RegisterScriptRuntime. type: " << resourceType << std::endl;
-			auto it = resources->find(resourceType);
-			if (it == resources->end()) {
-				std::cout << "RegisterScriptRuntime. not find: " << resourceType << std::endl;
-				return false;
-			}
-
-
-			auto res = (core::IResource*)resources->at(resourceType);
-			auto impl = runtime->CreateImpl(res);
-			core::Resource* res1 = (core::Resource*)res;
-			res1->impl = impl;
-			res1->runtime = runtime;
-			res1->started = true;
+			//runtimes->insert({ resourceType, (core::ScriptRuntime*)runtime });
+			std::cout << "RegisterScriptRuntim type: " << resourceType << std::endl;
+			//IResource* resource = module->AddResource(IResource::CreationInfo{ resourceType, });
+			//
+			//
+			//auto impl = runtime->CreateImpl(resource);
+			//core::Resource* res1 = (core::Resource*)resource;
+			//res1->impl = impl;
+			//res1->runtime = runtime;
+			//res1->started = true;
 			return true;
 		};
 
-		void AddResource(IResource::CreationInfo info, HMODULE hModule) {
-			Resource* resource = new Resource(info, hModule);
-			resources->insert({ info.type, resource });
+		void AddResource(IResource::CreationInfo info) {
+			Resource* resource = new Resource(info);
+			resources->insert({ info.name, resource });
 			std::cout << "AddResource " << info.name << std::endl;
 		}
+
 
 		virtual IPackage::PathInfo Resolve(IResource* resource, const std::string& path, const std::string& currentModulePath) const override {
 			IPackage* pkg1 = NULL;
 			return IPackage::PathInfo{ pkg1, path, currentModulePath };
 		}
 
+		//Module* GetModuleByType(const std::string& resourceType) {
+		//	auto map = *modules;
+		//	for (const auto& [key, value] : map)
+		//		if (value->GetType() == resourceType)
+		//			return value;
+		//	return NULL;
+		//};
+
+
+
 		virtual IResource* GetResource(const std::string& name) override {
-			
-		
+			if (resources->find(name) != resources->end()) 
+				return (IResource*)resources->at(name);
+			return NULL;
 		};
 
 		void Stop() {
