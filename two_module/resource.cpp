@@ -1,6 +1,7 @@
 #include "resource.h"
 #include "runtime.h"
 #include <string>
+#include <iostream>
 
 #ifdef SERVER_MODULE
     // For filestream
@@ -10,19 +11,43 @@
 
 bool BoilerplateResource::Start()
 {
+
     // Load file
-    //auto src = ReadFile(resource->GetMain());
-    //if(src.empty())
-    //{
+    auto mvaluenone = core::ICore::Instance().CreateMValueNone();
+    auto mvaluedict = core::ICore::Instance().CreateMValueDict();
+    auto mvaluenill = core::ICore::Instance().CreateMValueNil();
+    mvaluedict->Set("none", mvaluenone);
+    mvaluedict->Set("mvaluenill", mvaluenill);
+    //mvaluedict->SetConst("mvaluenill", mvaluedict->Get("none"));
+    //auto begin = mvaluedict->Begin();
+
+    for (auto it = mvaluedict->Begin(); it; it = mvaluedict->Next()) {
+        auto iii = it;
+        auto key = iii->GetKey();
+        auto value = iii->GetValue();
+        auto value2 = value->Clone();
+        auto iseq = value->Equals(value2);
+        std::cout << key << std::endl;
+    }
+    auto sdas = mvaluedict->Equals(mvaluedict);
+    //auto kkk = begin->GetKey();
+    
+    auto type = mvaluenone.Get()->GetType();
+    auto size = mvaluedict->GetSize();
+    auto main = resource->GetMain();
+    auto src = ReadFile(main);
+    if(src.empty())
+    {
     //    Log::Error << "Failed to read resource main file" << Log::Endl;
-    //    return false;
-    //}
+        std::cout << "Failed to read resource main file" << std::endl;
+        return false;
+    }
     //
     //// Now we can access the resource main file and e.g. start a script using the source code
     //// To showcase this, we are just going to log the file content here
     //Log::Info << "Resource main content:" << Log::Endl;
     //Log::Info << src << Log::Endl;
-
+    //core::ICore::Instance().LogDebug(src, resource);
     return true;
 }
 
@@ -56,17 +81,17 @@ void BoilerplateResource::OnTick()
     // of all the existing base objects, to check if they are valid in the user scripts
 //}
 
-//std::string BoilerplateResource::ReadFile(std::string path)
-//{
-//    auto pkg = resource->GetPackage();
-//    // Check if file exists
-//    if(!pkg->FileExists(path)) return std::string();
-//    // Open file
-//    core::IPackage::File* pkgFile = pkg->OpenFile(path);
-//    std::string src(pkg->GetFileSize(pkgFile), '\0');
-//    // Read file content
-//    pkg->ReadFile(pkgFile, src.data(), src.size());
-//    pkg->CloseFile(pkgFile);
-//
-//    return src;
-//}
+std::string BoilerplateResource::ReadFile(std::string path)
+{
+    auto pkg = resource->GetPackage();
+    // Check if file exists
+    if(!pkg->FileExists(path)) return std::string();
+    // Open file
+    core::IPackage::File* pkgFile = pkg->OpenFile(path);
+    std::string src(pkg->GetFileSize(pkgFile), '\0');
+    // Read file content
+    pkg->ReadFile(pkgFile, src.data(), src.size());
+    pkg->CloseFile(pkgFile);
+
+    return src;
+}

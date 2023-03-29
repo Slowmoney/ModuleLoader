@@ -36,7 +36,7 @@ namespace core {
 		
 		virtual Mode GetMode() const = 0;
 		
-		//virtual bool FileExists(const std::string& path) = 0;
+		virtual bool FileExists(const std::string& path) = 0;
 		//
 		virtual File* OpenFile(const std::string& path) = 0;
 		virtual void CloseFile(File* file) = 0;

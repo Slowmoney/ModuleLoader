@@ -9,34 +9,21 @@ namespace core {
 		std::unordered_map<std::string, core::Resource*>* resources = new std::unordered_map<std::string, core::Resource*>();
 		Module(ICore* core, std::string fullModuleName, std::string name) : core(core), name(name) {
 			this->hModule = ::LoadLibraryA(fullModuleName.c_str());
-
-			//typedef bool (*FuncModuleMain)(ICore*);
-			//
-			//FuncModuleMain moduleMain = (FuncModuleMain)::GetProcAddress((HMODULE)this->hModule, "altMain");
-			//if (moduleMain != NULL) {
-			//
-			//	bool hasError = (*moduleMain)((ICore*)core);
-			//
-			//	
-			//	std::cout << "hasError " << hasError << std::endl;
-			//}
-			//else std::cout << "Error Load function" << std::endl;
+			if (this->hModule == NULL) {
+				core->LogError("Fail load Module " + name);
+				return;
+			}
+			typedef bool (*FuncModuleMain)(ICore*);
+			FuncModuleMain moduleMain = (FuncModuleMain)::GetProcAddress((HMODULE)this->hModule, "altMain");
+			if (moduleMain != NULL) {
+				bool hasError = (*moduleMain)((ICore*)core);
+			}
+			else core->LogError("Error Load function" + name);
 		};
 
 		const std::string& GetType() const {
 			return type;
 		};
-
-
-
-		IResource* AddResource(IResource::CreationInfo info) {
-			
-		
-			Resource* resource = new Resource(info);
-			resources->insert({ info.name, resource });
-			std::cout << "AddResource " << info.name << std::endl;
-			return (IResource*)resource;
-		}
 
 		HINSTANCE hModule;
 		std::string name;

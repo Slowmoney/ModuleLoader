@@ -135,11 +135,13 @@
     <ClCompile Include="TomlConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseObject.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="LocalStorage.h">
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>
     <ClInclude Include="Module.h" />
+    <ClInclude Include="MValue.h" />
     <ClInclude Include="Package.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScriptRuntime.h" />

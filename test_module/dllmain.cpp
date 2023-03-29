@@ -9,6 +9,7 @@ class TestResourceImpl : public core::IResource::Impl {
 public:
     TestResourceImpl() = default;
     void OnTick() {
+        
         //std::cout << "TestResourceImpl tick" << std::endl;
     };
 };
@@ -37,6 +38,12 @@ public:
     {
         auto res = new TestResourceImpl();
         resources.insert(res);
+        core::ICore::Instance().LogWarning("TestResourceImpl tick", resource);
+        core::ICore::Instance().LogDebug("TestResourceImpl tick", resource);
+        core::ICore::Instance().LogError("TestResourceImpl tick", resource);
+        core::ICore::Instance().LogInfo("TestResourceImpl tick", resource);
+
+        //std::cout << core::ICore::Instance().GetResource("oneres")->GetType() << std::endl;
         return res;
     }
 
@@ -54,7 +61,6 @@ EXPORT bool altMain(core::ICore* server) {
         auto& runtime = TestScriptRuntime::Instance();
 
         core::ICore::Instance().RegisterScriptRuntime(MODULE_TYPE, &runtime);
-        //std::cout << core::ICore::Instance().GetResource("test_module")->GetType() << std::endl;
         
         //TestResourceImpl::
         //core::ICore::Instance().Resolve()

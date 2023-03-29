@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <iostream>
 #include <deps/ConfigBase.h>
 #include <toml11-3.7.1/toml.hpp>
 using namespace toml::literals::toml_literals;
@@ -16,7 +15,6 @@ public:
 			std::vector<char>(str, str + len));
 		auto value = toml::literals::toml_literals::literal_internal_impl(loc);
 		TomlConfig* config = new TomlConfig(value);
-
 		return config->rootValue;
 	}
 

@@ -48,5 +48,5 @@ public:
     }
 
     // Reads a file using the alt:V API, so it works both on server- and clientside
-    //std::string ReadFile(std::string path);
+    std::string ReadFile(std::string path);
 };

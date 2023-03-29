@@ -128,15 +128,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CRefCountable.h" />
     <ClInclude Include="deps\ConfigBase.h" />
     <ClInclude Include="ICore.h" />
     <ClInclude Include="ILocalStorage.h" />
     <ClInclude Include="IPackage.h" />
     <ClInclude Include="IResource.h" />
     <ClInclude Include="IScriptRuntime.h" />
+    <ClInclude Include="objects\IBaseObject.h" />
+    <ClInclude Include="objects\IEntity.h" />
+    <ClInclude Include="objects\ILocalPlayer.h" />
+    <ClInclude Include="objects\INetworkObject.h" />
+    <ClInclude Include="objects\IPed.h" />
+    <ClInclude Include="objects\IPlayer.h" />
+    <ClInclude Include="objects\IVehicle.h" />
+    <ClInclude Include="objects\IWorldObject.h" />
+    <ClInclude Include="Ref.h" />
     <ClInclude Include="SDK.h">
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>
+    <ClInclude Include="types\Array.h" />
+    <ClInclude Include="types\BoneInfo.h" />
+    <ClInclude Include="types\Cloth.h" />
+    <ClInclude Include="types\ConfigError.h" />
+    <ClInclude Include="types\DlcCloth.h" />
+    <ClInclude Include="types\DlcProp.h" />
+    <ClInclude Include="types\Expected.h" />
+    <ClInclude Include="types\HeadBlendData.h" />
+    <ClInclude Include="types\HeadOverlay.h" />
+    <ClInclude Include="types\IConnectionInfo.h" />
+    <ClInclude Include="types\KeyState.h" />
+    <ClInclude Include="types\MValue.h" />
+    <ClInclude Include="types\PedModelInfo.h" />
+    <ClInclude Include="types\Permissions.h" />
+    <ClInclude Include="types\Prop.h" />
+    <ClInclude Include="types\RGBA.h" />
+    <ClInclude Include="types\Types.h" />
+    <ClInclude Include="types\VehicleModelInfo.h" />
+    <ClInclude Include="types\Weapon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

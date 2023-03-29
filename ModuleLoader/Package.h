@@ -1,6 +1,7 @@
 #pragma once
 #include <SDK.h>
 #include <fstream>
+#include <filesystem>
 
 namespace core {
 	class Package : IPackage {
@@ -10,9 +11,12 @@ namespace core {
 		virtual Mode GetMode() const override {
 			return mode;
 		};
-		//
-		//virtual bool FileExists(const std::string& path) override {};
-		//
+
+		virtual bool FileExists(const std::string& path) override {
+			const std::filesystem::path name(root + path);
+			return std::filesystem::exists(name);
+		};
+		
 		virtual File* OpenFile(const std::string& path) override {
 			std::ifstream* file = new std::ifstream();
 			std::string name = root + path;
@@ -26,7 +30,7 @@ namespace core {
 			std::ifstream* fstream = (std::ifstream*)file;
 			fstream->close();
 		};
-		//
+		
 		virtual uint64_t GetFileSize(File* file) override {
 			auto _file = (std::ofstream*)file;
 			
@@ -43,14 +47,10 @@ namespace core {
 		//};
 		//
 		virtual uint64_t ReadFile(File* file, void* buffer, uint64_t size) override {
-
 			auto _file = (std::ifstream*)file;
 			if (!_file->is_open()) return 0;
-
 			_file->read((char *)buffer, size);
-			
 			char* saad = (char*)buffer;
-			
 			return 0;
 		};
 		//virtual uint64_t WriteFile(File* file, void* buffer, uint64_t size) override {
@@ -62,7 +62,6 @@ namespace core {
 			std::string src(GetFileSize(file), '\0');
 			ReadFile(file, src.data(), src.size());
 			CloseFile(file);
-			std::cout << "cfg= " << src << std::endl;
 			return src;
 		}
 
