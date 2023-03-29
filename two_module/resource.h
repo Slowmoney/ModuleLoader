@@ -4,13 +4,13 @@
 #include <chrono>
 
 class BoilerplateRuntime;
-class BoilerplateResource : public core::IResource::Impl
+class BoilerplateResource : public alt::IResource::Impl
 {
     BoilerplateRuntime* runtime;
-    core::IResource* resource;
+    alt::IResource* resource;
 
 public:
-    BoilerplateResource(BoilerplateRuntime* runtime, core::IResource* resource) : runtime(runtime), resource(resource){};
+    BoilerplateResource(BoilerplateRuntime* runtime, alt::IResource* resource) : runtime(runtime), resource(resource){};
     ~BoilerplateResource() = default;
 
     bool Start() override;
@@ -31,7 +31,7 @@ public:
     //}
 
     // Gets the alt:V IResource instance
-    core::IResource* GetIResource()
+    alt::IResource* GetIResource()
     {
         return resource;
     }

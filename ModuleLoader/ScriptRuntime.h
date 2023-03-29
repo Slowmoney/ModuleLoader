@@ -1,6 +1,6 @@
 #pragma once
 #include <SDK.h>
-namespace core {
+namespace alt {
 	class ScriptRuntime : IScriptRuntime {
 	public:
 		ScriptRuntime(){}

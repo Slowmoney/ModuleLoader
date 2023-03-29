@@ -1,6 +1,6 @@
 #pragma once
 #include <SDK.h>
-namespace core {
+namespace alt {
 	class BaseObject: public alt::IBaseObject
 	{
 	public:
@@ -16,7 +16,7 @@ namespace core {
 		};
 		virtual MValueConst GetMetaData(const std::string& key) const {
 			auto it = metaData->find(key);
-			if (it == metaData->end()) return MValueConst(core::MValueNone());
+			if (it == metaData->end()) return MValueConst(MValueNone());
 			auto data = metaData->at(key);
 
 			return data;

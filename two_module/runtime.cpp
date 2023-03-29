@@ -7,7 +7,7 @@ BoilerplateRuntime::BoilerplateRuntime()
     // like setting up the scripting language interpreter etc.
 }
 
-core::IResource::Impl* BoilerplateRuntime::CreateImpl(core::IResource* impl)
+alt::IResource::Impl* BoilerplateRuntime::CreateImpl(alt::IResource* impl)
 {
     // Called every time a new resource is created,
     // and expects us to return an instance of our own custom resource class
@@ -16,7 +16,7 @@ core::IResource::Impl* BoilerplateRuntime::CreateImpl(core::IResource* impl)
     return resource;
 }
 
-void BoilerplateRuntime::DestroyImpl(core::IResource::Impl* impl)
+void BoilerplateRuntime::DestroyImpl(alt::IResource::Impl* impl)
 {
     // Called every time a resource is stopped,
     // and expects us to clean up everything related to the resource

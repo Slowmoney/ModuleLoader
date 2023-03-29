@@ -33,13 +33,13 @@
 
 #endif  /* _COLORS_ */
 
-namespace core {
+namespace alt {
 	class Core : ICore {
 		std::unordered_map<std::string, MValue>* metaData = new std::unordered_map<std::string, MValue>();
 		std::unordered_map<std::string, MValue>* metaSyncedData = new std::unordered_map<std::string, MValue>();
 	public:
-		std::unordered_map<std::string, core::Resource*>* resources = new std::unordered_map<std::string, core::Resource*>();
-		std::unordered_map<std::string, core::IScriptRuntime*>* runtimes = new std::unordered_map<std::string, core::IScriptRuntime*>();
+		std::unordered_map<std::string, Resource*>* resources = new std::unordered_map<std::string, Resource*>();
+		std::unordered_map<std::string, IScriptRuntime*>* runtimes = new std::unordered_map<std::string, IScriptRuntime*>();
 		virtual std::string GetVersion() const override {
 			return "CORE v2";
 		};
@@ -48,23 +48,23 @@ namespace core {
 			return "master";
 		}
 
-		virtual void LogInfo(const std::string& str, IResource* resource = nullptr) override {
+		virtual void LogInfo(const std::string& str, alt::IResource* resource = nullptr) override {
 			LOG(RST, "[info] ", resource);
 		}
 
-		virtual void LogDebug(const std::string& str, IResource* resource = nullptr) override {
+		virtual void LogDebug(const std::string& str, alt::IResource* resource = nullptr) override {
 			LOG(KMAG, "[debug] ", resource);
 		}
 
-		virtual void LogWarning(const std::string& str, IResource* resource = nullptr) override {
+		virtual void LogWarning(const std::string& str, alt::IResource* resource = nullptr) override {
 			LOG(KYEL, "[warning] ", resource);
 		}
 
-		virtual void LogError(const std::string& str, IResource* resource = nullptr) override {
+		virtual void LogError(const std::string& str, alt::IResource* resource = nullptr) override {
 			LOG(KRED, "[error] ", resource);
 		}
 
-		virtual void LogColored(const std::string& str, IResource* resource = nullptr) override {
+		virtual void LogColored(const std::string& str, alt::IResource* resource = nullptr) override {
 			LOG(KCYN, "[colored] ", resource);
 		}
 
@@ -222,7 +222,7 @@ namespace core {
 		};
 		virtual MValueConst GetMetaData(const std::string& key) const override {
 			auto it = metaData->find(key);
-			if (it == metaData->end()) return MValueConst(core::MValueNone());
+			if (it == metaData->end()) return MValueConst(MValueNone());
 			auto data = metaData->at(key);
 
 			return data;
@@ -244,7 +244,7 @@ namespace core {
 		};
 		virtual MValueConst GetSyncedMetaData(const std::string& key) const override {
 			auto it = metaData->find(key);
-			if (it == metaData->end()) return MValueConst(core::MValueNone());
+			if (it == metaData->end()) return MValueConst(MValueNone());
 			auto data = metaData->at(key);
 
 			return data;

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <filesystem>
 
-namespace core {
+namespace alt {
 	class Package : IPackage {
 	public:
 		Package(std::string root, Mode mode): root(root), mode(mode) {}
@@ -41,10 +41,10 @@ namespace core {
 			_file->seekp(0, std::ios::beg);
 			return size;
 		};
-		//virtual void SeekFile(File* file, uint64_t offset, SeekOrigin origin) override {};
-		//virtual uint64_t TellFile(File* file) override {
-		//	return 0;
-		//};
+		virtual void SeekFile(File* file, uint64_t offset, SeekOrigin origin) override {};
+		virtual uint64_t TellFile(File* file) override {
+			return 0;
+		};
 		//
 		virtual uint64_t ReadFile(File* file, void* buffer, uint64_t size) override {
 			auto _file = (std::ifstream*)file;
@@ -53,12 +53,12 @@ namespace core {
 			char* saad = (char*)buffer;
 			return 0;
 		};
-		//virtual uint64_t WriteFile(File* file, void* buffer, uint64_t size) override {
-		//	return 0;
-		//};
+		virtual uint64_t WriteFile(File* file, void* buffer, uint64_t size) override {
+			return 0;
+		};
 
 		std::string ReadConfig() {
-			core::IPackage::File* file = OpenFile("resource.toml");
+			alt::IPackage::File* file = OpenFile("resource.toml");
 			std::string src(GetFileSize(file), '\0');
 			ReadFile(file, src.data(), src.size());
 			CloseFile(file);

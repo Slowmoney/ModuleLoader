@@ -1,4 +1,5 @@
-﻿#include <windows.h>
+﻿#define ALT_SERVER_API
+#include <windows.h>
 #include <iostream>
 #include <map>
 #include <unordered_map>
@@ -15,6 +16,7 @@
 #include "TomlConfig.h"
 #include "Module.h"
 
+
 std::string getExecutablePath() {
 	char rawPathName[MAX_PATH];
 	GetModuleFileNameA(NULL, rawPathName, MAX_PATH);
@@ -25,22 +27,25 @@ std::string getExecutableDir() {
 	std::filesystem::path path(executablePath.c_str());
 	return path.remove_filename().generic_string();
 }
-namespace core {
+namespace alt {
 	class CoreFactory {
 	public:
-		core::Core* core = new core::Core();
-		std::unordered_map<std::string, core::Module*>* modules = new std::unordered_map<std::string, core::Module*>();
-		void Create(std::string name) {
+		Core* core = new Core();
+		std::unordered_map<std::string, Module*>* modules = new std::unordered_map<std::string, Module*>();
+		void Create(std::string name, std::string fullModulePath) {
 			std::string moduleName(name.begin(), name.end());
 			std::string fullModuleName = modulesFolder + moduleName;
-			AddModule(name, fullModuleName);
+			AddModule(name, fullModulePath);
 			return;
 		}
 
 		void AddModule(std::string name, std::string fullModuleName) {
 
 			Module* module = new Module((ICore*)core, fullModuleName, name);
-			modules->insert({ name, module });
+			bool isStarted = module->Start();
+			if(isStarted) modules->insert({ name, module });
+
+			//delete module;
 		}
 
 		void LoadModules() {
@@ -48,11 +53,48 @@ namespace core {
 			{
 				std::string path = getExecutableDir() + modulesFolder;
 				for (const auto& entry : std::filesystem::directory_iterator(path)) {
-					auto ext = entry.path().extension();
-					auto name = entry.path().filename().replace_extension();
-					if (ext != L".dll") continue;
-					core->LogInfo("Load module: " + entry.path().string());
-					Create(name.string());
+					auto isDir = entry.is_directory();
+					if (isDir) {
+						auto name = entry.path().filename().replace_extension().string();
+						auto ext = ".dll";
+						std::string folder = entry.path().string();
+						std::string full = folder + "/" + entry.path().filename().string() + ext;
+						
+						std::filesystem::directory_entry dir(full);
+						
+						auto exist = std::filesystem::exists(dir);
+						
+						std::wstring sd(folder.begin(), folder.end());
+						
+
+						//::AddDllDirectory(sd.c_str());
+						auto error = GetLastError();
+						wchar_t ctext[256];
+						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
+							NULL,
+							error,
+							0,
+							ctext,
+							sizeof(ctext),
+							NULL);
+						std::wstring errorStr(ctext);
+						std::wcout << L"error:" << errorStr.c_str() << L"sd: " << sd << std::endl;
+						//LoadModule(dir);
+
+
+
+						LoadModule(dir);
+					}
+					else
+					{
+						auto ext = entry.path().extension().string();
+						if (ext != ".dll") continue;
+						LoadModule(entry);
+					}
+
+
+					
+					
 				}
 					
 			}
@@ -63,16 +105,25 @@ namespace core {
 			
 		}
 
+		void LoadModule(std::filesystem::directory_entry entry) {
+			auto fullPath = std::filesystem::path(entry).lexically_normal();
+			auto ext = fullPath.extension().string();
+			auto name = fullPath.filename().replace_extension().string();
+			auto path = fullPath.string();
+			core->LogInfo("Load module: " + path);
+			Create(name, path);
+		}
+
 		void LoadResources() {
 			std::string path = getExecutableDir() + resourcesFolder;
 			for (const auto& entry : std::filesystem::directory_iterator(path)) {
 				auto name = entry.path().filename().string();
 				std::string path = getExecutableDir() + resourcesFolder + name;
-				auto package = new core::Package(path+"/", core::IPackage::Mode::READ);
+				auto package = new Package(path+"/", alt::IPackage::Mode::READ);
 				auto config = LoadResourceConfig(package->ReadConfig());
 				auto type = config->Get("type")->AsString();
 				auto main = config->Get("main")->AsString();
-				auto info = IResource::CreationInfo{ type, name, main, (IPackage*)package };
+				auto info = alt::IResource::CreationInfo{ type, name, main, (IPackage*)package };
 				core->AddResource(info);
 			}
 		}
@@ -99,7 +150,7 @@ namespace core {
 	};
 }
 
-core::CoreFactory* coreFactory = new core::CoreFactory();
+alt::CoreFactory* coreFactory = new alt::CoreFactory();
 
 
 void my_handler(int s) {

@@ -1,11 +1,12 @@
 #include "main.h"
 #include <SDK.h>
+#include <version/version.h> 
 #define SERVER_MODULE
 #ifdef SERVER_MODULE
 
-EXPORT bool altMain(core::ICore* core)
+EXPORT bool altMain(alt::ICore* core)
 {
-    core::ICore::SetInstance(core);
+    alt::ICore::SetInstance(core);
 
     // Create instance of runtime and register
     auto& runtime = BoilerplateRuntime::Instance();
@@ -32,7 +33,8 @@ EXPORT const char* GetType()
 }
 #endif
 
-//EXPORT const char* GetSDKHash()
-//{
-//    return ALT_SDK_VERSION;
-//}
+EXPORT const char* GetSDKHash()
+{
+    return ALT_SDK_VERSION;
+}
+

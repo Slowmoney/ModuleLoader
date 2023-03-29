@@ -13,9 +13,9 @@ bool BoilerplateResource::Start()
 {
 
     // Load file
-    auto mvaluenone = core::ICore::Instance().CreateMValueNone();
-    auto mvaluedict = core::ICore::Instance().CreateMValueDict();
-    auto mvaluenill = core::ICore::Instance().CreateMValueNil();
+    auto mvaluenone = alt::ICore::Instance().CreateMValueNone();
+    auto mvaluedict = alt::ICore::Instance().CreateMValueDict();
+    auto mvaluenill = alt::ICore::Instance().CreateMValueNil();
     mvaluedict->Set("none", mvaluenone);
     mvaluedict->Set("mvaluenill", mvaluenill);
     //mvaluedict->SetConst("mvaluenill", mvaluedict->Get("none"));
@@ -87,7 +87,7 @@ std::string BoilerplateResource::ReadFile(std::string path)
     // Check if file exists
     if(!pkg->FileExists(path)) return std::string();
     // Open file
-    core::IPackage::File* pkgFile = pkg->OpenFile(path);
+    alt::IPackage::File* pkgFile = pkg->OpenFile(path);
     std::string src(pkg->GetFileSize(pkgFile), '\0');
     // Read file content
     pkg->ReadFile(pkgFile, src.data(), src.size());

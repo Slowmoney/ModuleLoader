@@ -1,7 +1,7 @@
 #pragma once
 #include <SDK.h>
 
-namespace core {
+namespace alt {
 	//class IMValueImpl : public alt::IMValue
 	//{
 	//public:
@@ -349,7 +349,7 @@ namespace core {
 			return MValue(mv);
 		}
 		virtual bool Equals(MValueConst other) const override {
-			if (other->GetType() == core::IMValue::Type::DICT) {
+			if (other->GetType() == alt::IMValue::Type::DICT) {
 				auto dict = other.As<alt::IMValueDict>();
 				for (auto it = dict->Begin(); it; it = dict->Next()) {
 					auto has = data->find(it->GetKey());
@@ -360,7 +360,7 @@ namespace core {
 			}
 			return other->GetType() == type;
 		};
-		static  core::IMValueDictImpl::Iterator* iterator;
+		static  IMValueDictImpl::Iterator* iterator;
 		alt::IMValue::Type type;
 	};
 
@@ -497,9 +497,9 @@ namespace core {
 			return value;
 		};;
 		virtual std::shared_ptr<alt::IBaseObject> Value() const override {
-			core::BaseObject* tt = (core::BaseObject*)value;
-			core::BaseObject ss = *tt;
-			auto ob = std::make_shared<core::BaseObject>(ss);
+			alt::BaseObject* tt = (alt::BaseObject*)value;
+			alt::BaseObject ss = *tt;
+			auto ob = std::make_shared<alt::BaseObject>(ss);
 
 			return (std::shared_ptr<alt::IBaseObject>)ob;
 		};
@@ -552,4 +552,4 @@ namespace core {
 	};
 }
 
-core::IMValueDictImpl::Iterator* core::IMValueDictImpl::iterator = (core::IMValueDictImpl::Iterator *)0;
+alt::IMValueDictImpl::Iterator* alt::IMValueDictImpl::iterator = (alt::IMValueDictImpl::Iterator *)0;

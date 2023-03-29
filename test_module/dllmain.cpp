@@ -3,9 +3,10 @@
 #include <iostream>
 #include <unordered_set>
 #include <SDK.h>
+#include <version/version.h>
 #define MODULE_TYPE "test"
 
-class TestResourceImpl : public core::IResource::Impl {
+class TestResourceImpl : public alt::IResource::Impl {
 public:
     TestResourceImpl() = default;
     void OnTick() {
@@ -15,7 +16,7 @@ public:
 };
 
 
-class TestScriptRuntime : public core::IScriptRuntime {
+class TestScriptRuntime : public alt::IScriptRuntime {
 public:
     TestScriptRuntime() = default;
     std::unordered_set<TestResourceImpl*> resources;
@@ -23,7 +24,7 @@ public:
         //std::cout << "TestScriptRuntime tick" << std::endl;
     };
 
-    void DestroyImpl(core::IResource::Impl* impl) override
+    void DestroyImpl(alt::IResource::Impl* impl) override
     {
         auto res = static_cast<TestResourceImpl*>(impl);
         resources.erase(res);
@@ -34,14 +35,14 @@ public:
         delete this;
     }
 
-    core::IResource::Impl* CreateImpl(core::IResource* resource)
+    alt::IResource::Impl* CreateImpl(alt::IResource* resource)
     {
         auto res = new TestResourceImpl();
         resources.insert(res);
-        core::ICore::Instance().LogWarning("TestResourceImpl tick", resource);
-        core::ICore::Instance().LogDebug("TestResourceImpl tick", resource);
-        core::ICore::Instance().LogError("TestResourceImpl tick", resource);
-        core::ICore::Instance().LogInfo("TestResourceImpl tick", resource);
+        alt::ICore::Instance().LogWarning("TestResourceImpl tick", resource);
+        alt::ICore::Instance().LogDebug("TestResourceImpl tick", resource);
+        alt::ICore::Instance().LogError("TestResourceImpl tick", resource);
+        alt::ICore::Instance().LogInfo("TestResourceImpl tick", resource);
 
         //std::cout << core::ICore::Instance().GetResource("oneres")->GetType() << std::endl;
         return res;
@@ -55,12 +56,12 @@ public:
 };
 
 
-EXPORT bool altMain(core::ICore* server) {
-        std::cout << __FILE__ << std::endl;
-        core::ICore::SetInstance(server);
+EXPORT bool altMain(alt::ICore* server) {
+        //std::cout << __FILE__ << std::endl;
+        alt::ICore::SetInstance(server);
         auto& runtime = TestScriptRuntime::Instance();
 
-        core::ICore::Instance().RegisterScriptRuntime(MODULE_TYPE, &runtime);
+        alt::ICore::Instance().RegisterScriptRuntime(MODULE_TYPE, &runtime);
         
         //TestResourceImpl::
         //core::ICore::Instance().Resolve()
@@ -75,7 +76,9 @@ EXPORT bool altMain(core::ICore* server) {
     }
 
 
-EXPORT const char* GetType()
+EXPORT const char* GetSDKHash()
 {
-    return MODULE_TYPE;
+    return ALT_SDK_VERSION;
 }
+
+

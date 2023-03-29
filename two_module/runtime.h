@@ -3,17 +3,17 @@
 #include <SDK.h>
 
 class BoilerplateResource;
-class BoilerplateRuntime : public core::IScriptRuntime
+class BoilerplateRuntime : public alt::IScriptRuntime
 {
-    std::unordered_map<core::IResource*, BoilerplateResource*> resources;
+    std::unordered_map<alt::IResource*, BoilerplateResource*> resources;
 
 public:
     BoilerplateRuntime();
-    core::IResource::Impl* CreateImpl(core::IResource* resource) override;
-    void DestroyImpl(core::IResource::Impl* impl) override;
+    alt::IResource::Impl* CreateImpl(alt::IResource* resource) override;
+    void DestroyImpl(alt::IResource::Impl* impl) override;
     void OnTick() override;
 
-    BoilerplateResource* GetResource(core::IResource* resource)
+    BoilerplateResource* GetResource(alt::IResource* resource)
     {
         if(resources.count(resource) == 0) return nullptr;
         return resources.at(resource);

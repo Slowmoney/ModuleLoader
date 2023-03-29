@@ -3,7 +3,7 @@
 #include <wtypes.h>
 #include <iostream>
 #include <deps/ConfigBase.h>
-namespace core {
+namespace alt {
 	class Resource : IResource {
 	public:
 		Resource(CreationInfo info) : info(info) {};
@@ -35,6 +35,44 @@ namespace core {
 			return info.pkg;
 		}
 
+		virtual MValueDict GetExports() const override {
+			return this->exports;
+		}
+
+		virtual void SetExports(MValueDict exports) override {
+			this->exports = exports;
+		}
+
+		virtual const Array<std::string> GetDependencies() const override {
+			return Array<std::string>();
+		}
+		virtual const Array<std::string> GetDependants() const override {
+			return Array<std::string>();
+		}
+
+		virtual const Array<Permission> GetRequiredPermissions() const override{
+			return Array<Permission>();
+		}
+		virtual const Array<Permission> GetOptionalPermissions() const override {
+			return Array<Permission>();
+		}
+
+		virtual std::string GetClientType() const override {
+			return "";
+		}
+		virtual std::string GetClientMain() const override {
+			return "";
+		}
+		virtual const std::vector<std::string>& GetClientFiles() const override {
+			return std::vector < std::string>();
+		}
+		virtual Config::Value::ValuePtr GetConfig() const override {
+			return config;
+		}
+		virtual std::set<std::string> GetMatchedFiles(const std::vector<std::string>& patterns) override {
+			return std::set<std::string>();
+		}
+
 		bool Start() {
 			started = impl->Start();
 			return started;
@@ -44,6 +82,7 @@ namespace core {
 		IScriptRuntime* runtime = NULL;
 		CreationInfo info;
 		Config::Value::ValuePtr config;
+		MValueDict exports;
 	protected:
 		bool started = false;
 		virtual ~Resource() override {
