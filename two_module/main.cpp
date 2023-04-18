@@ -12,7 +12,7 @@ EXPORT bool altMain(alt::ICore* core)
     auto& runtime = BoilerplateRuntime::Instance();
     core->RegisterScriptRuntime(MODULE_TYPE, &runtime);
     //Log::Colored << "Loaded Boilerplate module. Version ~y~" MODULE_VERSION << Log::Endl;
-
+    
     return true;
 }
 #endif

@@ -16,17 +16,23 @@
 #include "TomlConfig.h"
 #include "Module.h"
 
+#ifdef _WIN32
+#include <windows.h>
 
-std::string getExecutablePath() {
-	char rawPathName[MAX_PATH];
-	GetModuleFileNameA(NULL, rawPathName, MAX_PATH);
-	return std::string(rawPathName);
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#define DISABLE_NEWLINE_AUTO_RETURN  0x0008
+
+void activateVirtualTerminal()
+{
+	HANDLE handleOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD consoleMode;
+	GetConsoleMode(handleOut, &consoleMode);
+	consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	consoleMode |= DISABLE_NEWLINE_AUTO_RETURN;
+	SetConsoleMode(handleOut, consoleMode);
 }
-std::string getExecutableDir() {
-	std::string executablePath = getExecutablePath();
-	std::filesystem::path path(executablePath.c_str());
-	return path.remove_filename().generic_string();
-}
+#endif
+
 namespace alt {
 	class CoreFactory {
 	public:
@@ -34,7 +40,7 @@ namespace alt {
 		std::unordered_map<std::string, Module*>* modules = new std::unordered_map<std::string, Module*>();
 		void Create(std::string name, std::string fullModulePath) {
 			std::string moduleName(name.begin(), name.end());
-			std::string fullModuleName = modulesFolder + moduleName;
+			std::string fullModuleName = core->GetModulesPath() + moduleName;
 			AddModule(name, fullModulePath);
 			return;
 		}
@@ -51,7 +57,7 @@ namespace alt {
 		void LoadModules() {
 			try
 			{
-				std::string path = getExecutableDir() + modulesFolder;
+				std::string path = core->GetModulesPath();
 				for (const auto& entry : std::filesystem::directory_iterator(path)) {
 					auto isDir = entry.is_directory();
 					if (isDir) {
@@ -63,13 +69,12 @@ namespace alt {
 						std::filesystem::directory_entry dir(full);
 						
 						auto exist = std::filesystem::exists(dir);
-						
-						std::wstring sd(folder.begin(), folder.end());
+					
 						
 
 						//::AddDllDirectory(sd.c_str());
 						auto error = GetLastError();
-						wchar_t ctext[256];
+						char ctext[256];
 						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
 							NULL,
 							error,
@@ -77,8 +82,7 @@ namespace alt {
 							ctext,
 							sizeof(ctext),
 							NULL);
-						std::wstring errorStr(ctext);
-						std::wcout << L"error:" << errorStr.c_str() << L"sd: " << sd << std::endl;
+						std::cout << "error:" << ctext << "folder: " << folder << std::endl;
 						//LoadModule(dir);
 
 
@@ -106,6 +110,7 @@ namespace alt {
 		}
 
 		void LoadModule(std::filesystem::directory_entry entry) {
+			
 			auto fullPath = std::filesystem::path(entry).lexically_normal();
 			auto ext = fullPath.extension().string();
 			auto name = fullPath.filename().replace_extension().string();
@@ -115,10 +120,35 @@ namespace alt {
 		}
 
 		void LoadResources() {
-			std::string path = getExecutableDir() + resourcesFolder;
-			for (const auto& entry : std::filesystem::directory_iterator(path)) {
+
+			auto resources = core->config->Get("resources");
+			if (!resources->IsList()) return;
+
+
+			std::string resPath = core->GetResourcePath();
+			//
+			//auto list = resources->AsList();
+			//
+			//for (const auto& entry : list) {
+			//	auto name = entry->AsString();
+			//	std::string path = resPath + name;
+			//	auto package = new Package(path + "\\", alt::IPackage::Mode::READ);
+			//	auto configStr = package->ReadConfig();
+			//	if (!configStr.size()) {
+			//		std::cout << "no config: " << name << std::endl;
+			//		continue;
+			//	}
+			//	auto config = LoadResourceConfig(configStr);
+			//	
+			//	auto type = config->Get("type")->AsString();
+			//	auto main = config->Get("main")->AsString();
+			//	auto info = alt::IResource::CreationInfo{ type, name, main, (IPackage*)package };
+			//	core->AddResource(info);
+			//}
+
+			for (const auto& entry : std::filesystem::directory_iterator(resPath)) {
 				auto name = entry.path().filename().string();
-				std::string path = getExecutableDir() + resourcesFolder + name;
+				std::string path = resPath + name;
 				auto package = new Package(path+"/", alt::IPackage::Mode::READ);
 				auto config = LoadResourceConfig(package->ReadConfig());
 				auto type = config->Get("type")->AsString();
@@ -127,6 +157,7 @@ namespace alt {
 				core->AddResource(info);
 			}
 		}
+
 
 		Config::Value::ValuePtr LoadResourceConfig(const std::string &cfgString){
 			std::string errr = "";
@@ -144,14 +175,10 @@ namespace alt {
 			delete core;
 			core = NULL;
 		}
-		std::string modulesFolder = "modules/";
-		std::string resourcesFolder = "resources/";
-
 	};
 }
 
 alt::CoreFactory* coreFactory = new alt::CoreFactory();
-
 
 void my_handler(int s) {
 	printf("Caught signal %d\n", s);
@@ -162,6 +189,9 @@ void my_handler(int s) {
 
 int main(int argc, char** argv)
 {
+#ifdef _WIN32
+	activateVirtualTerminal();
+#endif
 	setlocale(LC_ALL, "Russian");
 	signal(SIGINT, my_handler);
 	coreFactory->LoadModules();

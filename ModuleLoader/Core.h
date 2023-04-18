@@ -5,6 +5,10 @@
 #include "ScriptRuntime.h"
 #include "BaseObject.h"
 #include "MValue.h"
+#include <fstream>
+#include <filesystem>
+#include <iostream>
+#include "TomlConfig.h"
 #ifndef _COLORS_
 #define _COLORS_
 
@@ -32,6 +36,24 @@
 #define LOG(c, x, resource) std::string name = "";if(resource != NULL) name = "[" + resource->GetName() + "] ";std::cout  << c << KGRN << name << c << x << str << RST << std::endl;
 
 #endif  /* _COLORS_ */
+
+std::string getExecutablePath() {
+	char rawPathName[MAX_PATH];
+	GetModuleFileNameA(NULL, rawPathName, MAX_PATH);
+	return std::string(rawPathName);
+}
+std::string getExecutableDir() {
+	std::string executablePath = getExecutablePath();
+	std::filesystem::path path(executablePath.c_str());
+
+	std::string root = path.remove_filename().lexically_normal().string();
+	
+
+	std::string r(root.begin(), root.end());
+	r.resize(r.size() - 2);
+	std::string str2 = root.substr(0, root.length() - 1);
+	return str2;
+}
 
 namespace alt {
 	class Core : ICore {
@@ -123,7 +145,8 @@ namespace alt {
 		};
 		virtual MValueFunction CreateMValueFunction(IMValueFunction::Impl* impl) override {
 			alt::IMValueFunction* s = new IMValueFunctionImpl(impl);
-			return MValueFunction(s);
+			auto test = MValueFunction(s);
+			return s;
 		};
 		virtual MValueVector2 CreateMValueVector2(Vector2f val) override {
 			alt::IMValueVector2* s = new IMValueVector2Impl(val);
@@ -173,6 +196,7 @@ namespace alt {
 		}
 		
 		virtual IResource* GetResource(const std::string& name) override {
+			std::cout << "GetResource " << name << " has: " << ((resources->find(name) != resources->end())?"true":"false") << std::endl;
 			if (resources->find(name) != resources->end()) 
 				return (IResource*)resources->at(name);
 			return NULL;
@@ -194,21 +218,21 @@ namespace alt {
 		virtual std::vector<IBlip*> GetBlips() const override {
 			return std::vector<IBlip*>();
 		};
-		virtual std::vector<ICheckpoint*> GetCheckpoints() const override {
-			return std::vector<ICheckpoint*>();
-		};
-		virtual std::vector<IPed*> GetPeds() const override {
-			return std::vector<IPed*>();
-		};;
-		virtual std::vector<IVirtualEntity*> GetVirtualEntities() const override {
-			return std::vector<IVirtualEntity*>();
-		};
-		virtual std::vector<IVirtualEntityGroup*> GetVirtualEntityGroups() const override {
-			return std::vector<IVirtualEntityGroup*>();
-		};
-		virtual std::vector<INetworkObject*> GetNetworkObjects() const override {
-			return std::vector<INetworkObject*>();
-		};
+		//virtual std::vector<ICheckpoint*> GetCheckpoints() const override {
+		//	return std::vector<ICheckpoint*>();
+		//};
+		//virtual std::vector<IPed*> GetPeds() const override {
+		//	return std::vector<IPed*>();
+		//};;
+		//virtual std::vector<IVirtualEntity*> GetVirtualEntities() const override {
+		//	return std::vector<IVirtualEntity*>();
+		//};
+		//virtual std::vector<IVirtualEntityGroup*> GetVirtualEntityGroups() const override {
+		//	return std::vector<IVirtualEntityGroup*>();
+		//};
+		//virtual std::vector<INetworkObject*> GetNetworkObjects() const override {
+		//	return std::vector<INetworkObject*>();
+		//};
 		
 		virtual void TriggerLocalEvent(const std::string& ev, MValueArgs args) override {
 			
@@ -233,11 +257,11 @@ namespace alt {
 		virtual void DeleteMetaData(const std::string& key) override {
 			metaData->erase(key);
 		};
-		virtual std::vector<std::string> GetMetaDataKeys() const override {
-			std::vector<std::string> keys;
-			for (auto& i : *metaData) keys.push_back(i.first);
-			return keys;
-		};
+		//virtual std::vector<std::string> GetMetaDataKeys() const override {
+		//	std::vector<std::string> keys;
+		//	for (auto& i : *metaData) keys.push_back(i.first);
+		//	return keys;
+		//};
 
 		virtual bool HasSyncedMetaData(const std::string& key) const override {
 			return metaData->contains(key);
@@ -255,11 +279,11 @@ namespace alt {
 		virtual void DeleteSyncedMetaData(const std::string& key) {
 			metaData->erase(key);
 		};
-		virtual std::vector<std::string> GetSyncedMetaDataKeys() const override {
-			std::vector<std::string> keys;
-			for (auto& i : *metaData) keys.push_back(i.first);
-			return keys;
-		};
+		//virtual std::vector<std::string> GetSyncedMetaDataKeys() const override {
+		//	std::vector<std::string> keys;
+		//	for (auto& i : *metaData) keys.push_back(i.first);
+		//	return keys;
+		//};
 
 		virtual const Array<Permission> GetRequiredPermissions() const override {
 			return Array<Permission>();
@@ -293,7 +317,8 @@ namespace alt {
 		};
 
 		virtual const std::string& GetRootDirectory() override {
-			return "";
+			auto dir = getExecutableDir();
+			return dir;
 		};
 
 		virtual IResource* StartResource(const std::string& name) override {
@@ -317,15 +342,15 @@ namespace alt {
 			
 		};
 
-		virtual void TriggerClientEventUnreliable(IPlayer* target, const std::string& ev, MValueArgs args)override {
-			
-		};
-		virtual void TriggerClientEventUnreliable(std::vector<IPlayer*> targets, const std::string& ev, MValueArgs args)override {
-			
-		};
-		virtual void TriggerClientEventUnreliableForAll(const std::string& ev, MValueArgs args)override {
-			
-		};
+		//virtual void TriggerClientEventUnreliable(IPlayer* target, const std::string& ev, MValueArgs args)override {
+		//	
+		//};
+		//virtual void TriggerClientEventUnreliable(std::vector<IPlayer*> targets, const std::string& ev, MValueArgs args)override {
+		//	
+		//};
+		//virtual void TriggerClientEventUnreliableForAll(const std::string& ev, MValueArgs args)override {
+		//	
+		//};
 
 		virtual IVehicle* CreateVehicle(uint32_t model, Position pos, Rotation rot) override {
 			return NULL;
@@ -334,16 +359,16 @@ namespace alt {
 		virtual ICheckpoint* CreateCheckpoint(uint8_t type, Position pos, float radius, float height, RGBA color) override {
 			return NULL;
 		};
-
-
-		virtual IVirtualEntity* CreateVirtualEntity(IVirtualEntityGroup* group, Position pos, uint32_t streamingDistance) override {
-			return NULL;
-		};
-
-
-		virtual IVirtualEntityGroup* CreateVirtualEntityGroup(uint32_t streamingRangeLimit) override {
-			return NULL;
-		};
+		//
+		//
+		//virtual IVirtualEntity* CreateVirtualEntity(IVirtualEntityGroup* group, Position pos, uint32_t streamingDistance) override {
+		//	return NULL;
+		//};
+		//
+		//
+		//virtual IVirtualEntityGroup* CreateVirtualEntityGroup(uint32_t streamingRangeLimit) override {
+		//	return NULL;
+		//};
 
 		virtual IBlip* CreateBlip(IPlayer* target, IBlip::BlipType type, Position pos) override {
 			return NULL;
@@ -381,7 +406,7 @@ namespace alt {
 		};
 
 		virtual uint32_t GetNetTime() const override {
-			return 0;
+			return 423;
 		};
 
 		virtual void SetPassword(const std::string& password) const override {
@@ -399,40 +424,57 @@ namespace alt {
 			return VehicleModelInfo();
 		};
 
-		virtual const PedModelInfo& GetPedModelByHash(uint32_t hash) const override {
-			return PedModelInfo();
+		virtual const cdecl PedModelInfo& GetPedModelByHash(uint32_t hash) const override {
+			std::string sss = "sss";
+			auto data = new PedModelInfo{
+				hash,
+				sss,
+				"type",
+				"dlcName",
+				"defaultUnarmedWeapon",
+				"movementClipSet",
+				std::vector<BoneInfo>()
+			};
+			std::cout << &data << std::endl;
+
+			auto data2 = PedModelInfo(*data);
+			std::cout << &data2 << std::endl;
+			return *data;
 		};
 
 
-		virtual Config::Value::ValuePtr GetServerConfig() const  override {
-			return config;
+		virtual Config::Value::ValuePtr GetServerConfig() const override {
+			auto dd = new Config::Value::Dict();
+			auto dict = config->AsDict();
+			auto ptr = std::make_shared<Config::Value>(dict);
+			return *dd;
 		};
 
 		virtual void SetWorldProfiler(bool state) override {
 			
 		};
 
-		virtual IPed* CreatePed(uint32_t model, Position pos, Rotation rot) override {
-			return 0;
-		};
+		//virtual IPed* CreatePed(uint32_t model, Position pos, Rotation rot) override {
+		//	return 0;
+		//};
 
-		virtual std::vector<IBaseObject*> GetEntitiesInDimension(int32_t dimension, uint64_t allowedTypes) const override {
-			return std::vector<IBaseObject*>();
-		}
-		virtual std::vector<IBaseObject*> GetEntitiesInRange(Position position, int32_t range, int32_t dimension, uint64_t allowedTypes) const override{
-			return std::vector<IBaseObject*>();
-		}
-		virtual std::vector<IBaseObject*> GetClosestEntities(Position position, int32_t range, int32_t dimension, int32_t limit, uint64_t allowedTypes) const override {
-			return std::vector<IBaseObject*>();
-		}
+		//virtual std::vector<IBaseObject*> GetEntitiesInDimension(int32_t dimension, uint64_t allowedTypes) const override {
+		//	return std::vector<IBaseObject*>();
+		//}
+		//virtual std::vector<IBaseObject*> GetEntitiesInRange(Position position, int32_t range, int32_t dimension, uint64_t allowedTypes) const override{
+		//	return std::vector<IBaseObject*>();
+		//}
+		//virtual std::vector<IBaseObject*> GetClosestEntities(Position position, int32_t range, int32_t dimension, int32_t limit, uint64_t allowedTypes) const override {
+		//	return std::vector<IBaseObject*>();
+		//}
 
-		virtual INetworkObject* CreateNetworkObject(uint32_t model, Position pos, Rotation rot, uint8_t alpha = 255, uint8_t textureVariation = 0, uint16_t lodDistance = 100) override {
-			return 0;
-		};
+		//virtual INetworkObject* CreateNetworkObject(uint32_t model, Position pos, Rotation rot, uint8_t alpha = 255, uint8_t textureVariation = 0, uint16_t lodDistance = 100) override {
+		//	return 0;
+		//};
 
-		virtual std::vector<IColShape*> GetColShapes() const override {
-			return std::vector<IColShape*>();
-		}
+		//virtual std::vector<IColShape*> GetColShapes() const override {
+		//	return std::vector<IColShape*>();
+		//}
 
 
 		void OnTick() {
@@ -458,7 +500,7 @@ namespace alt {
 				return;
 			}
 			IScriptRuntime* runtime = runtimes->at(info.type);
-			Resource* resource = new Resource(info);
+			Resource* resource = new Resource(info, GetResourcePath());
 			resources->insert({ info.name, resource });
 			auto impl = runtime->CreateImpl((IResource*)resource);
 			resource->impl = impl;
@@ -467,14 +509,46 @@ namespace alt {
 			if (!resource->IsStarted()) {
 				LogError("ERROR START RESOURCE " + info.type, (IResource*)resource);
 			}
+			else {
+				LogInfo("Stared resource: " + info.name, (IResource*)resource);
+			}
 		}
 
 		void Stop() {
 			started = false;
 		}
 
+		const Config::Value::ValuePtr LoadConfig() {
+			std::string cfg;
+			std::string error;
+			std::string line;
+			std::string path = getExecutableDir() + "/server.toml";
+			std::ifstream myfile(path);
+			if (myfile.is_open())
+			{
+				while (std::getline(myfile, line))
+				{
+					cfg.append(line + '\n');
+				}
+				myfile.close();
+			}
+
+			else std::cout << "Unable to open file";
+			return TomlConfig::Parse(cfg, error);
+		}
+
+		std::string GetResourcePath() {
+			return getExecutableDir() + '\\' + resourcesFolder;
+		}
+
+		std::string GetModulesPath() {
+			return getExecutableDir() + '\\' + modulesFolder;
+		}
+
 		bool started = true;
-		Config::Value::ValuePtr config;
+		const Config::Value::ValuePtr config = LoadConfig();
+		std::string resourcesFolder = "resources\\";
+		std::string modulesFolder = "modules\\";
 
 		~Core() {
 			std::cout << "~Core" << std::endl;

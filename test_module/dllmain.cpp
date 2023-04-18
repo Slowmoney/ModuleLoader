@@ -5,7 +5,8 @@
 #include <SDK.h>
 #include <version/version.h>
 #define MODULE_TYPE "test"
-
+#include <fstream>
+#include <sstream>
 class TestResourceImpl : public alt::IResource::Impl {
 public:
     TestResourceImpl() = default;
@@ -44,7 +45,6 @@ public:
         alt::ICore::Instance().LogError("TestResourceImpl tick", resource);
         alt::ICore::Instance().LogInfo("TestResourceImpl tick", resource);
 
-        //std::cout << core::ICore::Instance().GetResource("oneres")->GetType() << std::endl;
         return res;
     }
 

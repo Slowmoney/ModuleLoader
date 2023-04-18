@@ -2,6 +2,6 @@
 	path = SDK
 	url = https://github.com/altmp/cpp-sdk.git
 
-[submodule "js-module"]
+[submodule "jsmodule"]
 	path = js-module
 	url = https://github.com/altmp/altv-js-module.git

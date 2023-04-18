@@ -6,7 +6,7 @@
 namespace alt {
 	class Resource : IResource {
 	public:
-		Resource(CreationInfo info) : info(info) {};
+		Resource(CreationInfo info, std::string path) : info(info), path(path){};
 
 		virtual IScriptRuntime* GetRuntime() const override {
 			return runtime;
@@ -25,7 +25,7 @@ namespace alt {
 			return info.name; 
 		};
 		virtual const std::string& GetPath() const override { 
-			return info.name; 
+			return path + info.name;
 		};
 		virtual const std::string& GetMain() const override { 
 			return info.main; 
@@ -40,6 +40,8 @@ namespace alt {
 		}
 
 		virtual void SetExports(MValueDict exports) override {
+			auto size = exports.As<IMValueDict>();
+			std::cout << size->GetSize() << std::endl;
 			this->exports = exports;
 		}
 
@@ -74,8 +76,17 @@ namespace alt {
 		}
 
 		bool Start() {
-			started = impl->Start();
-			return started;
+			try
+			{
+				started = impl->Start();
+				return started;
+			}
+			catch (...)
+			{
+				std::cout << "Error start resource " << info.name << std::endl;
+			}
+			return false;
+			
 		}
 
 		Impl* impl = NULL;
@@ -83,6 +94,7 @@ namespace alt {
 		CreationInfo info;
 		Config::Value::ValuePtr config;
 		MValueDict exports;
+		std::string path;
 	protected:
 		bool started = false;
 		virtual ~Resource() override {

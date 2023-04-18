@@ -58,7 +58,9 @@ namespace alt {
 		};
 
 		std::string ReadConfig() {
+			if (!FileExists("resource.toml")) return "";
 			alt::IPackage::File* file = OpenFile("resource.toml");
+
 			std::string src(GetFileSize(file), '\0');
 			ReadFile(file, src.data(), src.size());
 			CloseFile(file);

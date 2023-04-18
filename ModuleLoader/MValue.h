@@ -44,9 +44,9 @@ namespace alt {
 			alt::IMValueNone* mv = new IMValueNoneImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		alt::IMValue::Type type;
 	};
 
@@ -67,9 +67,9 @@ namespace alt {
 			alt::IMValueNil* mv = new IMValueNilImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		alt::IMValue::Type type;
 	};
 
@@ -90,9 +90,9 @@ namespace alt {
 			alt::IMValueBool* mv = new IMValueBoolImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual bool Value() const override {
 			return val;
 		};
@@ -117,9 +117,9 @@ namespace alt {
 			alt::IMValueInt* mv = new IMValueIntImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual int64_t Value() const override {
 			return val;
 		};
@@ -144,9 +144,9 @@ namespace alt {
 			alt::IMValueUInt* mv = new IMValueUIntImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual uint64_t Value() const override {
 			return val;
 		};
@@ -171,9 +171,9 @@ namespace alt {
 			alt::IMValueDouble* mv = new IMValueDoubleImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual double Value() const override {
 			return val;
 		};
@@ -198,9 +198,9 @@ namespace alt {
 			alt::IMValueString* mv = new IMValueStringImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual const std::string& Value() const override {
 			return val;
 		};
@@ -255,9 +255,9 @@ namespace alt {
 			alt::IMValueList* mv = new IMValueListImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		alt::IMValue::Type type;
 		std::vector<MValue> data;
 	};
@@ -348,18 +348,18 @@ namespace alt {
 			alt::IMValue* mv = new IMValueDictImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			if (other->GetType() == alt::IMValue::Type::DICT) {
-				auto dict = other.As<alt::IMValueDict>();
-				for (auto it = dict->Begin(); it; it = dict->Next()) {
-					auto has = data->find(it->GetKey());
-					if (has == data->end()) return false;
-					if (!it->GetValue()->Equals(has->second)) return false;
-				}
-				return true;
-			}
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	if (other->GetType() == alt::IMValue::Type::DICT) {
+		//		auto dict = other.As<alt::IMValueDict>();
+		//		for (auto it = dict->Begin(); it; it = dict->Next()) {
+		//			auto has = data->find(it->GetKey());
+		//			if (has == data->end()) return false;
+		//			if (!it->GetValue()->Equals(has->second)) return false;
+		//		}
+		//		return true;
+		//	}
+		//	return other->GetType() == type;
+		//};
 		static  IMValueDictImpl::Iterator* iterator;
 		alt::IMValue::Type type;
 	};
@@ -382,9 +382,9 @@ namespace alt {
 			alt::IMValueVector2* mv = new IMValueVector2Impl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual alt::Vector2f Value() const override {
 			return val;
 		};
@@ -409,9 +409,9 @@ namespace alt {
 			alt::IMValueVector3* mv = new IMValueVector3Impl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual alt::Vector3f Value() const override {
 			return val;
 		};
@@ -436,9 +436,9 @@ namespace alt {
 			alt::IMValueRGBA* mv = new IMValueRGBAImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual alt::RGBA Value() const override {
 			return val;
 		};
@@ -463,9 +463,9 @@ namespace alt {
 			alt::IMValueFunction* mv = new IMValueFunctionImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 		virtual MValue Call(alt::MValueArgs args) const override {
 			return impl->Call(args);
 		};
@@ -489,9 +489,9 @@ namespace alt {
 			alt::IMValueBaseObject* mv = new IMValueBaseObjectImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 
 		virtual alt::IBaseObject* RawValue() const override {
 			return value;
@@ -532,9 +532,9 @@ namespace alt {
 			alt::IMValueByteArray* mv = new IMValueByteArrayImpl(*this);
 			return MValue(mv);
 		}
-		virtual bool Equals(MValueConst other) const override {
-			return other->GetType() == type;
-		};
+		//virtual bool Equals(MValueConst other) const override {
+		//	return other->GetType() == type;
+		//};
 
 		virtual Size GetSize() const override {
 			return size;

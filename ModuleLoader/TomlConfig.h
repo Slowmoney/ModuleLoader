@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <deps/ConfigBase.h>
-#include <toml11-3.7.1/toml.hpp>
+#include <toml.hpp>
 using namespace toml::literals::toml_literals;
 
 class TomlConfig
@@ -23,12 +23,12 @@ public:
 	}
 
 	Config::Value::ValuePtr ParseTomlDict(std::unordered_map<toml::key, toml::value> dict) {
-		Config::Value::Dict* dict1 = new Config::Value::Dict();
+		Config::Value::Dict dict1 = Config::Value::Dict();
 		for (auto it = dict.begin(); it != dict.end(); ++it) {
 			auto value = ParseTomlPrimitive(it->second);
-			dict1->insert({ it->first, value });
-		}
-		return Config::internal::ValueWrapper<Config::Value>(*dict1);
+			dict1.insert({ it->first, value });
+		} 
+		return Config::Value::ValuePtr(dict1);
 	}
 
 	Config::Value::ValuePtr ParseTomlArray(std::vector<toml::value> arr) {
@@ -45,6 +45,14 @@ public:
 		if (value.type() == toml::value_t::string) {
 			const std::string sadd(value.as_string().str);
 			return Config::internal::ValueWrapper<Config::Value>(sadd);
+		}
+		else if (value.type() == toml::value_t::boolean) {
+			bool data = value.as_boolean();
+			return data;
+		}
+		else if (value.type() == toml::value_t::integer || value.type() == toml::value_t::floating) {
+			Config::Value::Number data = value.as_integer();
+			return data;
 		}
 		else if (value.type() == toml::value_t::table) {
 			return ParseTomlDict(value.as_table());

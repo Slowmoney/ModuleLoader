@@ -9,31 +9,50 @@
     #include <streambuf>
 #endif
 
-bool BoilerplateResource::Start()
+void ProcessConfigOptions()
 {
 
-    // Load file
-    auto mvaluenone = alt::ICore::Instance().CreateMValueNone();
-    auto mvaluedict = alt::ICore::Instance().CreateMValueDict();
-    auto mvaluenill = alt::ICore::Instance().CreateMValueNil();
-    mvaluedict->Set("none", mvaluenone);
-    mvaluedict->Set("mvaluenill", mvaluenill);
-    //mvaluedict->SetConst("mvaluenill", mvaluedict->Get("none"));
-    //auto begin = mvaluedict->Begin();
+    auto cfg = alt::ICore::Instance().GetServerConfig();
+    Config::Value::ValuePtr moduleConfig = alt::ICore::Instance().GetServerConfig()["js-module"];
+    if (!moduleConfig->IsDict()) return;
 
-    for (auto it = mvaluedict->Begin(); it; it = mvaluedict->Next()) {
-        auto iii = it;
-        auto key = iii->GetKey();
-        auto value = iii->GetValue();
-        auto value2 = value->Clone();
-        auto iseq = value->Equals(value2);
-        std::cout << key << std::endl;
+    Config::Value::ValuePtr profiler = moduleConfig["profiler"];
+    if (profiler->IsDict())
+    {
+       
     }
-    auto sdas = mvaluedict->Equals(mvaluedict);
-    //auto kkk = begin->GetKey();
     
-    auto type = mvaluenone.Get()->GetType();
-    auto size = mvaluedict->GetSize();
+    std::cout << Config::Util::ConvertValueToString(moduleConfig) << std::endl;
+}
+
+bool BoilerplateResource::Start()
+{
+    //auto data = alt::ICore::Instance().GetPedModelByHash(33);
+    //std::cout << &data << std::endl;
+    //// Load file
+    //auto mvaluenone = alt::ICore::Instance().CreateMValueNone();
+    //auto mvaluedict = alt::ICore::Instance().CreateMValueDict();
+    //auto mvaluenill = alt::ICore::Instance().CreateMValueNil();
+    //mvaluedict->Set("none", mvaluenone);
+    //mvaluedict->Set("mvaluenill", mvaluenill);
+    ////mvaluedict->SetConst("mvaluenill", mvaluedict->Get("none"));
+    ////auto begin = mvaluedict->Begin();
+    //
+    //for (auto it = mvaluedict->Begin(); it; it = mvaluedict->Next()) {
+    //    auto iii = it;
+    //    auto key = iii->GetKey();
+    //    auto value = iii->GetValue();
+    //    auto value2 = value->Clone();
+    //    auto iseq = value->Equals(value2);
+    //    std::cout << key << std::endl;
+    //}
+    //auto sdas = mvaluedict->Equals(mvaluedict);
+    ////auto kkk = begin->GetKey();
+
+    ProcessConfigOptions();
+    
+    //auto type = mvaluenone.Get()->GetType();
+    //auto size = mvaluedict->GetSize();
     auto main = resource->GetMain();
     auto src = ReadFile(main);
     if(src.empty())
