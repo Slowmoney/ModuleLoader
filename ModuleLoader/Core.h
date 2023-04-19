@@ -5,6 +5,8 @@
 #include "ScriptRuntime.h"
 #include "BaseObject.h"
 #include "WorldObject.h"
+#include "VoiceChannel.h"
+#include "Vehicle.h"
 #include "Colshape.h"
 #include "MValue.h"
 #include "Blip.h"
@@ -51,7 +53,7 @@ std::string getExecutableDir() {
 	std::filesystem::path path(executablePath.c_str());
 
 	std::string root = path.remove_filename().lexically_normal().string();
-	
+
 
 	std::string r(root.begin(), root.end());
 	r.resize(r.size() - 2);
@@ -157,7 +159,7 @@ namespace alt {
 			return MValueBaseObject(s);
 		};
 		virtual MValueFunction CreateMValueFunction(alt::IMValueFunction::Impl* impl) override {
-			alt::IMValueFunction::Impl * const impl1 = std::as_const(impl);
+			alt::IMValueFunction::Impl* const impl1 = std::as_const(impl);
 			IMValueFunctionImpl* s = new IMValueFunctionImpl(impl1);
 			return MValueFunction(s);
 		};
@@ -221,10 +223,10 @@ namespace alt {
 			LogDebug("RUN UNIMPLEMENTED FileRead");
 			return "";
 		}
-		
+
 		virtual IResource* GetResource(const std::string& name) override {
 			//LogDebug("GetResource: => " + name);
-			if (resources->find(name) != resources->end()) 
+			if (resources->find(name) != resources->end())
 				return (IResource*)resources->at(name);
 			return NULL;
 		};
@@ -233,7 +235,7 @@ namespace alt {
 			LogDebug("RUN UNIMPLEMENTED GetEntityByID");
 			return NULL;
 		};
-		
+
 		virtual std::vector<IEntity*> GetEntities() const override {
 			LogDebug("RUN UNIMPLEMENTED GetEntities");
 			return std::vector<IEntity*>();
@@ -265,10 +267,10 @@ namespace alt {
 		//virtual std::vector<INetworkObject*> GetNetworkObjects() const override {
 		//	return std::vector<INetworkObject*>();
 		//};
-		
+
 		virtual void TriggerLocalEvent(const std::string& ev, MValueArgs args) override {
 			LogDebug("RUN UNIMPLEMENTED TriggerLocalEvent");
-			
+
 		};
 		virtual void TriggerLocalEventOnMain(const std::string& ev, MValueArgs args) override {
 			LogDebug("RUN UNIMPLEMENTED TriggerLocalEventOnMain");
@@ -336,17 +338,17 @@ namespace alt {
 		virtual void DestroyBaseObject(IBaseObject* handle) override {
 			LogDebug("RUN UNIMPLEMENTED DestroyBaseObject");
 		};
-		
+
 		virtual const std::vector<IResource*> GetAllResources() const override {
 			LogDebug("RUN UNIMPLEMENTED GetAllResources");
 			return std::vector<IResource*>();
 		}
-		
+
 		virtual std::string StringToSHA256(const std::string& str) const override {
 			LogDebug("RUN UNIMPLEMENTED StringToSHA256");
 			return "";
 		};
-		
+
 		virtual bool IsEventEnabled(alt::CEvent::Type type) const override {
 			LogDebug("RUN UNIMPLEMENTED IsEventEnabled");
 			return false;
@@ -376,11 +378,11 @@ namespace alt {
 
 		virtual void TriggerClientEvent(IPlayer* target, const std::string& ev, MValueArgs args) override {
 			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent");
-			
+
 		};
 		virtual void TriggerClientEvent(std::vector<IPlayer*> targets, const std::string& ev, MValueArgs args) override {
 			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent");
-			
+
 		};
 		virtual void TriggerClientEventForAll(const std::string& ev, MValueArgs args) override {
 			LogDebug("RUN UNIMPLEMENTED TriggerClientEventForAll");
@@ -398,7 +400,10 @@ namespace alt {
 
 		virtual IVehicle* CreateVehicle(uint32_t model, Position pos, Rotation rot) override {
 			LogDebug("RUN UNIMPLEMENTED CreateVehicle");
-			return NULL;
+			int id = idProvider.Next();
+			auto cs = new alt::Vehicle(id, model, pos, rot);
+		    return (IVehicle*)(cs);
+			//return NULL;
 		};
 
 		virtual ICheckpoint* CreateCheckpoint(uint8_t type, Position pos, float radius, float height, RGBA color) override {
@@ -417,7 +422,7 @@ namespace alt {
 		//};
 
 		virtual IBlip* CreateBlip(IPlayer* target, IBlip::BlipType type, Position pos) override {
-			LogDebug("RUN UNIMPLEMENTED CreateBlip");
+			//LogDebug("RUN UNIMPLEMENTED CreateBlip");
 			int id = idProvider.Next();
 			auto cs = new alt::Blip(id, target, type, pos);
 			return (IBlip*)(cs);
@@ -431,7 +436,10 @@ namespace alt {
 
 		virtual IVoiceChannel* CreateVoiceChannel(bool spatial, float maxDistance) override {
 			LogDebug("RUN UNIMPLEMENTED CreateVoiceChannel");
-			return NULL;
+			int id = idProvider.Next();
+			auto cs = new alt::VoiceChannel(id, spatial, maxDistance);
+			return (IVoiceChannel*)(cs);
+			//return NULL;
 		};
 
 		virtual IColShape* CreateColShapeCylinder(Position pos, float radius, float height) override {
@@ -443,24 +451,30 @@ namespace alt {
 			return NULL;
 		};
 		virtual IColShape* CreateColShapeCircle(Position pos, float radius) override {
-			LogDebug("RUN UNIMPLEMENTED CreateColShapeCircle");
+			//LogDebug("RUN UNIMPLEMENTED CreateColShapeCircle");
 			int id = idProvider.Next();
 			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::CIRCLE);
 			return (IColShape*)(cs);
 		};
 		virtual IColShape* CreateColShapeCube(Position pos, Position pos2) override {
-			LogDebug("RUN UNIMPLEMENTED CreateColShapeCube");
+		    //LogDebug("RUN UNIMPLEMENTED CreateColShapeCube");
 			int id = idProvider.Next();
 			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::CUBOID);
 			return (IColShape*)(cs);
 		};
 		virtual IColShape* CreateColShapeRectangle(float x1, float y1, float x2, float y2, float z) override {
 			LogDebug("RUN UNIMPLEMENTED CreateColShapeRectangle");
-			return NULL;
+			int id = idProvider.Next();
+			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::RECT);
+			return (IColShape*)(cs);
+			//return NULL;
 		};
 		virtual IColShape* CreateColShapePolygon(float minZ, float maxZ, std::vector<Vector2f> points) override {
 			LogDebug("RUN UNIMPLEMENTED CreateColShapePolygon");
-			return NULL;
+			int id = idProvider.Next();
+			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::POLYGON);
+			return (IColShape*)(cs);
+			//return NULL;
 		};
 
 		virtual std::vector<IPlayer*> GetPlayersByName(const std::string& name) const override {
@@ -554,7 +568,7 @@ namespace alt {
 				{
 					std::cout << e.what() << std::endl;
 				}
-		
+
 			}
 		}
 
@@ -564,7 +578,7 @@ namespace alt {
 				return;
 			}
 			IScriptRuntime* runtime = runtimes->at(info.type);
-			Resource* resource = new Resource((alt::ICore *)(this), info, GetResourcePath());
+			Resource* resource = new Resource((alt::ICore*)(this), info, GetResourcePath());
 			resources->insert({ info.name, resource });
 			auto impl = runtime->CreateImpl((IResource*)resource);
 			resource->impl = impl;

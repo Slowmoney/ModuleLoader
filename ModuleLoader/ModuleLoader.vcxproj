@@ -158,6 +158,8 @@
     <ClInclude Include="Package.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScriptRuntime.h" />
+    <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="VoiceChannel.h" />
     <ClInclude Include="WorldObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

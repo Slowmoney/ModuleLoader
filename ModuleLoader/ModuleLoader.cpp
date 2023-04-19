@@ -49,7 +49,7 @@ namespace alt {
 
 			Module* module = new Module((ICore*)core, fullModuleName, name);
 			bool isStarted = module->Start();
-			if(isStarted) modules->insert({ name, module });
+			if (isStarted) modules->insert({ name, module });
 
 			//delete module;
 		}
@@ -90,17 +90,17 @@ namespace alt {
 						return;
 					}
 				}
-					
+
 			}
 			catch (const std::exception& e)
 			{
 				std::cout << "error load Modules " << e.what() << std::endl;
 			}
-			
+
 		}
 
 		void LoadModule(std::string entry) {
-			
+
 			auto fullPath = std::filesystem::path(entry).lexically_normal();
 			auto ext = fullPath.extension().string();
 			auto name = fullPath.filename().replace_extension().string();
@@ -155,7 +155,7 @@ namespace alt {
 		}
 
 
-		Config::Value::ValuePtr LoadResourceConfig(const std::string &cfgString){
+		Config::Value::ValuePtr LoadResourceConfig(const std::string& cfgString) {
 			std::string errr = "";
 			auto cfg = Config::ConfigBase<TomlConfig>().Parse(cfgString, errr);
 			if (errr.size()) {
