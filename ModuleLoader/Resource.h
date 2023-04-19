@@ -6,7 +6,7 @@
 namespace alt {
 	class Resource : IResource {
 	public:
-		Resource(CreationInfo info, std::string path) : info(info), path(path){};
+		Resource(ICore* core,  CreationInfo info, std::string path) : core(core), info(info), path(path + info.name) {};
 
 		virtual IScriptRuntime* GetRuntime() const override {
 			return runtime;
@@ -25,7 +25,7 @@ namespace alt {
 			return info.name; 
 		};
 		virtual const std::string& GetPath() const override { 
-			return path + info.name;
+			return path;
 		};
 		virtual const std::string& GetMain() const override { 
 			return info.main; 
@@ -40,8 +40,9 @@ namespace alt {
 		}
 
 		virtual void SetExports(MValueDict exports) override {
-			auto size = exports.As<IMValueDict>();
-			std::cout << size->GetSize() << std::endl;
+			if (!exports || !this->exports) {
+				std::cout << "SetExports: not exports = " << std::endl;
+			}
 			this->exports = exports;
 		}
 
@@ -60,24 +61,29 @@ namespace alt {
 		}
 
 		virtual std::string GetClientType() const override {
+			core->LogDebug("RUN UNIMPLEMENTED GetClientType");
 			return "";
 		}
 		virtual std::string GetClientMain() const override {
+			core->LogDebug("RUN UNIMPLEMENTED GetClientMain");
 			return "";
 		}
 		virtual const std::vector<std::string>& GetClientFiles() const override {
+			core->LogDebug("RUN UNIMPLEMENTED GetClientFiles");
 			return std::vector < std::string>();
 		}
 		virtual Config::Value::ValuePtr GetConfig() const override {
 			return config;
 		}
 		virtual std::set<std::string> GetMatchedFiles(const std::vector<std::string>& patterns) override {
+			core->LogDebug("RUN UNIMPLEMENTED GetMatchedFiles");
 			return std::set<std::string>();
 		}
 
 		bool Start() {
 			try
 			{
+				std::cout << "Start resource " << info.name << std::endl;
 				started = impl->Start();
 				return started;
 			}
@@ -89,6 +95,7 @@ namespace alt {
 			
 		}
 
+		ICore* core;
 		Impl* impl = NULL;
 		IScriptRuntime* runtime = NULL;
 		CreationInfo info;

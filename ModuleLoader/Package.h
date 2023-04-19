@@ -6,7 +6,7 @@
 namespace alt {
 	class Package : IPackage {
 	public:
-		Package(std::string root, Mode mode): root(root), mode(mode) {}
+		Package(std::string root, Mode mode) : root(root), mode(mode) {};
 
 		virtual Mode GetMode() const override {
 			return mode;

@@ -6,6 +6,7 @@
 
 DWORD WINAPI thread2(LPVOID t)
 {
+	std::cout << "thread2\n";
 	try
 	{
 		alt::ICore* core = (alt::ICore*)t;
@@ -14,7 +15,7 @@ DWORD WINAPI thread2(LPVOID t)
 	}
 	catch (...)
 	{
-
+		std::cout << "THG+ASD\n";
 	}
 	return 0;
 }
@@ -55,10 +56,29 @@ namespace alt {
 			typedef bool (*FuncModuleMain)(ICore*);
 			LPTHREAD_START_ROUTINE moduleMain = (LPTHREAD_START_ROUTINE)::GetProcAddress((HMODULE)this->hModule, "altMain");
 			if (moduleMain != NULL) {
-				//CreateThread(NULL, 0, moduleMain, core, 0, NULL);
+				core->LogDebug("altMain " + name);
+				//HANDLE hThread = CreateThread(NULL, 0, moduleMain, core, 0, NULL);
 
-
+				//if (hThread == NULL)
+				//{
+				//	// Thread creation failed.
+				//	// More details can be retrieved by calling GetLastError()
+				//	core->LogError("Fail StartLib CreateThread" + name);
+				//	return false;
+				//}
+				//WaitForSingleObject(hThread, INFINITE);
+				//CloseHandle(hThread);
 				bool done = (*moduleMain)((ICore*)core);
+				auto error = GetLastError();
+				char ctext[256];
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
+					NULL,
+					error,
+					0,
+					ctext,
+					sizeof(ctext),
+					NULL);
+				std::cout << ctext;
 				if (!done) {
 					core->LogError("Fail StartLib " + name);
 					return false;

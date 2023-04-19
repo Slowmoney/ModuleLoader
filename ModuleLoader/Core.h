@@ -4,11 +4,15 @@
 #include <unordered_map>
 #include "ScriptRuntime.h"
 #include "BaseObject.h"
+#include "WorldObject.h"
+#include "Colshape.h"
 #include "MValue.h"
+#include "Blip.h"
 #include <fstream>
 #include <filesystem>
 #include <iostream>
 #include "TomlConfig.h"
+#include "IdProvider.h"
 #ifndef _COLORS_
 #define _COLORS_
 
@@ -57,6 +61,7 @@ std::string getExecutableDir() {
 
 namespace alt {
 	class Core : ICore {
+		IdProvider idProvider;
 		std::unordered_map<std::string, MValue>* metaData = new std::unordered_map<std::string, MValue>();
 		std::unordered_map<std::string, MValue>* metaSyncedData = new std::unordered_map<std::string, MValue>();
 	public:
@@ -88,6 +93,14 @@ namespace alt {
 
 		virtual void LogColored(const std::string& str, alt::IResource* resource = nullptr) override {
 			LOG(KCYN, "[colored] ", resource);
+		}
+
+		void const LogInfo(const std::string& str, alt::IResource* resource = nullptr) const {
+			LOG(RST, "[info] ", resource);
+		}
+
+		void const LogDebug(const std::string& str, alt::IResource* resource = nullptr) const {
+			LOG(KMAG, "[debug] ", resource);
 		}
 
 		virtual MValueNone CreateMValueNone() override {
@@ -143,10 +156,10 @@ namespace alt {
 			alt::IMValueBaseObject* s = new IMValueBaseObjectImpl(val.get());
 			return MValueBaseObject(s);
 		};
-		virtual MValueFunction CreateMValueFunction(IMValueFunction::Impl* impl) override {
-			alt::IMValueFunction* s = new IMValueFunctionImpl(impl);
-			auto test = MValueFunction(s);
-			return s;
+		virtual MValueFunction CreateMValueFunction(alt::IMValueFunction::Impl* impl) override {
+			alt::IMValueFunction::Impl * const impl1 = std::as_const(impl);
+			IMValueFunctionImpl* s = new IMValueFunctionImpl(impl1);
+			return MValueFunction(s);
 		};
 		virtual MValueVector2 CreateMValueVector2(Vector2f val) override {
 			alt::IMValueVector2* s = new IMValueVector2Impl(val);
@@ -170,52 +183,71 @@ namespace alt {
 		};
 
 		virtual bool IsDebug() const override {
+			LogDebug("RUN UNIMPLEMENTED IsDebug");
 			return false;
 		};
 
 		virtual uint32_t Hash(const std::string& str) const override {
-			return 0;
+			uint32_t hash = 0;
+			for (const char c : str)
+			{
+				hash += c;
+				hash += (hash << 10);
+				hash ^= (hash >> 6);
+			}
+			hash += (hash << 3);
+			hash ^= (hash >> 11);
+			hash += (hash << 15);
+			return hash;
 		};
 
 		virtual bool SubscribeCommand(const std::string& cmd, CommandCallback cb) override {
+			LogDebug("RUN UNIMPLEMENTED SubscribeCommand");
 			return true;
 		}
 
 		virtual bool RegisterScriptRuntime(const std::string& resourceType, IScriptRuntime* runtime) override {
 			runtimes->insert({ resourceType, runtime });
-			LogError("RegisterScriptRuntim type: " + resourceType);
+			LogInfo("RegisterScriptRuntim type: " + resourceType);
 			return true;
 		};
 
 		virtual bool FileExists(const std::string& path) override {
+			LogDebug("RUN UNIMPLEMENTED FileExists");
 			return false;
 		}
 
 		virtual std::string FileRead(const std::string& path) override {
+			LogDebug("RUN UNIMPLEMENTED FileRead");
 			return "";
 		}
 		
 		virtual IResource* GetResource(const std::string& name) override {
-			std::cout << "GetResource " << name << " has: " << ((resources->find(name) != resources->end())?"true":"false") << std::endl;
+			//LogDebug("GetResource: => " + name);
 			if (resources->find(name) != resources->end()) 
 				return (IResource*)resources->at(name);
 			return NULL;
 		};
 
 		virtual IEntity* GetEntityByID(uint16_t id) const override {
+			LogDebug("RUN UNIMPLEMENTED GetEntityByID");
 			return NULL;
 		};
 		
 		virtual std::vector<IEntity*> GetEntities() const override {
+			LogDebug("RUN UNIMPLEMENTED GetEntities");
 			return std::vector<IEntity*>();
 		};
 		virtual std::vector<IPlayer*> GetPlayers() const override {
+			LogDebug("RUN UNIMPLEMENTED GetPlayers");
 			return std::vector<IPlayer*>();
 		};
 		virtual std::vector<IVehicle*> GetVehicles() const override {
+			LogDebug("RUN UNIMPLEMENTED GetVehicles");
 			return std::vector<IVehicle*>();
 		};
 		virtual std::vector<IBlip*> GetBlips() const override {
+			LogDebug("RUN UNIMPLEMENTED GetBlips");
 			return std::vector<IBlip*>();
 		};
 		//virtual std::vector<ICheckpoint*> GetCheckpoints() const override {
@@ -235,9 +267,11 @@ namespace alt {
 		//};
 		
 		virtual void TriggerLocalEvent(const std::string& ev, MValueArgs args) override {
+			LogDebug("RUN UNIMPLEMENTED TriggerLocalEvent");
 			
 		};
 		virtual void TriggerLocalEventOnMain(const std::string& ev, MValueArgs args) override {
+			LogDebug("RUN UNIMPLEMENTED TriggerLocalEventOnMain");
 
 		};
 
@@ -286,9 +320,11 @@ namespace alt {
 		//};
 
 		virtual const Array<Permission> GetRequiredPermissions() const override {
+			LogDebug("RUN UNIMPLEMENTED GetRequiredPermissions");
 			return Array<Permission>();
 		};
 		virtual const Array<Permission> GetOptionalPermissions() const override {
+			LogDebug("RUN UNIMPLEMENTED GetOptionalPermissions");
 			return Array<Permission>();
 		};
 
@@ -298,22 +334,25 @@ namespace alt {
 		}
 
 		virtual void DestroyBaseObject(IBaseObject* handle) override {
-		
+			LogDebug("RUN UNIMPLEMENTED DestroyBaseObject");
 		};
 		
 		virtual const std::vector<IResource*> GetAllResources() const override {
+			LogDebug("RUN UNIMPLEMENTED GetAllResources");
 			return std::vector<IResource*>();
 		}
 		
 		virtual std::string StringToSHA256(const std::string& str) const override {
+			LogDebug("RUN UNIMPLEMENTED StringToSHA256");
 			return "";
 		};
 		
 		virtual bool IsEventEnabled(alt::CEvent::Type type) const override {
+			LogDebug("RUN UNIMPLEMENTED IsEventEnabled");
 			return false;
 		};
 		virtual void ToggleEvent(alt::CEvent::Type type, bool state) override {
-			
+			LogDebug("RUN UNIMPLEMENTED ToggleEvent");
 		};
 
 		virtual const std::string& GetRootDirectory() override {
@@ -322,24 +361,29 @@ namespace alt {
 		};
 
 		virtual IResource* StartResource(const std::string& name) override {
+			LogDebug("RUN UNIMPLEMENTED StartResource");
 			return (IResource*)resources->at(name);
 		};
 
 		virtual void StopResource(const std::string& name) override {
+			LogDebug("RUN UNIMPLEMENTED StopResource");
 			resources->at(name);
 		};
 		virtual void RestartResource(const std::string& name) override {
+			LogDebug("RUN UNIMPLEMENTED RestartResource");
 			resources->at(name);
 		};
 
 		virtual void TriggerClientEvent(IPlayer* target, const std::string& ev, MValueArgs args) override {
+			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent");
 			
 		};
-		virtual void TriggerClientEvent(std::vector<IPlayer*> targets, const std::string& ev, MValueArgs args)override {
+		virtual void TriggerClientEvent(std::vector<IPlayer*> targets, const std::string& ev, MValueArgs args) override {
+			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent");
 			
 		};
 		virtual void TriggerClientEventForAll(const std::string& ev, MValueArgs args) override {
-			
+			LogDebug("RUN UNIMPLEMENTED TriggerClientEventForAll");
 		};
 
 		//virtual void TriggerClientEventUnreliable(IPlayer* target, const std::string& ev, MValueArgs args)override {
@@ -353,10 +397,12 @@ namespace alt {
 		//};
 
 		virtual IVehicle* CreateVehicle(uint32_t model, Position pos, Rotation rot) override {
+			LogDebug("RUN UNIMPLEMENTED CreateVehicle");
 			return NULL;
 		};
 
 		virtual ICheckpoint* CreateCheckpoint(uint8_t type, Position pos, float radius, float height, RGBA color) override {
+			LogDebug("RUN UNIMPLEMENTED CreateCheckpoint");
 			return NULL;
 		};
 		//
@@ -371,60 +417,81 @@ namespace alt {
 		//};
 
 		virtual IBlip* CreateBlip(IPlayer* target, IBlip::BlipType type, Position pos) override {
-			return NULL;
+			LogDebug("RUN UNIMPLEMENTED CreateBlip");
+			int id = idProvider.Next();
+			auto cs = new alt::Blip(id, target, type, pos);
+			return (IBlip*)(cs);
 		};
 
 		virtual IBlip* CreateBlip(IPlayer* target, IBlip::BlipType type, IEntity* attachTo) override {
-			return NULL;
+			int id = idProvider.Next();
+			auto cs = new alt::Blip(id, target, type, attachTo);
+			return (IBlip*)(cs);
 		};
 
 		virtual IVoiceChannel* CreateVoiceChannel(bool spatial, float maxDistance) override {
+			LogDebug("RUN UNIMPLEMENTED CreateVoiceChannel");
 			return NULL;
 		};
 
 		virtual IColShape* CreateColShapeCylinder(Position pos, float radius, float height) override {
+			LogDebug("RUN UNIMPLEMENTED CreateColShapeCylinder");
 			return NULL;
 		};
 		virtual IColShape* CreateColShapeSphere(Position pos, float radius) override {
+			LogDebug("RUN UNIMPLEMENTED CreateColShapeSphere");
 			return NULL;
 		};
 		virtual IColShape* CreateColShapeCircle(Position pos, float radius) override {
-			return NULL;
+			LogDebug("RUN UNIMPLEMENTED CreateColShapeCircle");
+			int id = idProvider.Next();
+			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::CIRCLE);
+			return (IColShape*)(cs);
 		};
 		virtual IColShape* CreateColShapeCube(Position pos, Position pos2) override {
-			return NULL;
+			LogDebug("RUN UNIMPLEMENTED CreateColShapeCube");
+			int id = idProvider.Next();
+			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::CUBOID);
+			return (IColShape*)(cs);
 		};
 		virtual IColShape* CreateColShapeRectangle(float x1, float y1, float x2, float y2, float z) override {
+			LogDebug("RUN UNIMPLEMENTED CreateColShapeRectangle");
 			return NULL;
 		};
 		virtual IColShape* CreateColShapePolygon(float minZ, float maxZ, std::vector<Vector2f> points) override {
+			LogDebug("RUN UNIMPLEMENTED CreateColShapePolygon");
 			return NULL;
 		};
 
 		virtual std::vector<IPlayer*> GetPlayersByName(const std::string& name) const override {
+			LogDebug("RUN UNIMPLEMENTED GetPlayersByName");
 			return std::vector<IPlayer*>();
 		};
 
 		virtual uint32_t GetNetTime() const override {
+			LogDebug("RUN UNIMPLEMENTED GetNetTime");
 			return 423;
 		};
 
 		virtual void SetPassword(const std::string& password) const override {
-			
+			LogDebug("RUN UNIMPLEMENTED SetPassword");
 		};
 		virtual uint64_t HashServerPassword(const std::string& password) const override {
+			LogDebug("RUN UNIMPLEMENTED HashServerPassword");
 			return 0;
 		};
 
 		virtual void StopServer() override {
-
+			LogDebug("RUN UNIMPLEMENTED StopServer");
 		};
 
 		virtual const VehicleModelInfo& GetVehicleModelByHash(uint32_t hash) const override {
+			LogDebug("RUN UNIMPLEMENTED GetVehicleModelByHash");
 			return VehicleModelInfo();
 		};
 
 		virtual const cdecl PedModelInfo& GetPedModelByHash(uint32_t hash) const override {
+			LogDebug("RUN UNIMPLEMENTED GetPedModelByHash");
 			std::string sss = "sss";
 			auto data = new PedModelInfo{
 				hash,
@@ -444,14 +511,11 @@ namespace alt {
 
 
 		virtual Config::Value::ValuePtr GetServerConfig() const override {
-			auto dd = new Config::Value::Dict();
-			auto dict = config->AsDict();
-			auto ptr = std::make_shared<Config::Value>(dict);
-			return *dd;
+			return config;
 		};
 
 		virtual void SetWorldProfiler(bool state) override {
-			
+			LogDebug("RUN UNIMPLEMENTED SetWorldProfiler");
 		};
 
 		//virtual IPed* CreatePed(uint32_t model, Position pos, Rotation rot) override {
@@ -500,7 +564,7 @@ namespace alt {
 				return;
 			}
 			IScriptRuntime* runtime = runtimes->at(info.type);
-			Resource* resource = new Resource(info, GetResourcePath());
+			Resource* resource = new Resource((alt::ICore *)(this), info, GetResourcePath());
 			resources->insert({ info.name, resource });
 			auto impl = runtime->CreateImpl((IResource*)resource);
 			resource->impl = impl;
@@ -538,11 +602,12 @@ namespace alt {
 		}
 
 		std::string GetResourcePath() {
-			return getExecutableDir() + '\\' + resourcesFolder;
+			std::string path = getExecutableDir() + "\\" + resourcesFolder;
+			return path;
 		}
 
 		std::string GetModulesPath() {
-			return getExecutableDir() + '\\' + modulesFolder;
+			return getExecutableDir() + "\\" + modulesFolder;
 		}
 
 		bool started = true;

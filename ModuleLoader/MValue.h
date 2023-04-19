@@ -446,10 +446,12 @@ namespace alt {
 		alt::RGBA val;
 	};
 
-	class IMValueFunctionImpl : public alt::IMValueFunction {
+	const class IMValueFunctionImpl : public alt::IMValueFunction {
 	public:
-		IMValueFunctionImpl(const alt::IMValueFunction::Impl* impl) : type(alt::IMValue::Type::FUNCTION), impl(impl) {}
-		IMValueFunctionImpl(const IMValueFunctionImpl& rhs) {}
+		IMValueFunctionImpl(alt::IMValueFunction::Impl * const impl): impl(impl) {
+			//this->impl = std::as_const(impl);
+		}
+		//IMValueFunctionImpl(const IMValueFunctionImpl& rhs) {}
 		virtual alt::IMValue::Type GetType() const override {
 			return type;
 		};
@@ -460,7 +462,7 @@ namespace alt {
 			return 0.0;
 		}
 		virtual MValue Clone() const override {
-			alt::IMValueFunction* mv = new IMValueFunctionImpl(*this);
+			alt::IMValueFunction* mv = new IMValueFunctionImpl(this->impl);
 			return MValue(mv);
 		}
 		//virtual bool Equals(MValueConst other) const override {
@@ -469,8 +471,8 @@ namespace alt {
 		virtual MValue Call(alt::MValueArgs args) const override {
 			return impl->Call(args);
 		};
-		alt::IMValue::Type type;
-		const alt::IMValueFunction::Impl* impl;
+		const alt::IMValue::Type type = alt::IMValue::Type::FUNCTION;
+		alt::IMValueFunction::Impl * const impl;
 	};
 	class IMValueBaseObjectImpl : public alt::IMValueBaseObject {
 	public:

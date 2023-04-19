@@ -58,22 +58,25 @@ namespace alt {
 			try
 			{
 				std::string path = core->GetModulesPath();
-				for (const auto& entry : std::filesystem::directory_iterator(path)) {
-					auto isDir = entry.is_directory();
-					if (isDir) {
-						auto name = entry.path().filename().replace_extension().string();
-						auto ext = ".dll";
-						std::string folder = entry.path().string();
-						std::string full = folder + "/" + entry.path().filename().string() + ext;
-						
-						std::filesystem::directory_entry dir(full);
-						
-						auto exist = std::filesystem::exists(dir);
-					
-						
+				auto modules = core->GetServerConfig()->Get("modules");
+				if (!modules->IsList()) {
+					std::cerr << "INVALID SEARVER CONFIG";
+					return;
+				}
 
-						//::AddDllDirectory(sd.c_str());
-						auto error = GetLastError();
+				for (const auto& entry : modules->AsList()) {
+					std::string name = entry->AsString();
+					auto package = alt::Package(path, alt::IPackage::Mode::READ);
+					auto hasDir = package.FileExists(name);
+					if (hasDir) {
+						name = name + "\\" + name + ".dll";
+					}
+					else {
+						name = name + ".dll";
+					}
+					LoadModule(path + "\\" + name);
+					auto error = GetLastError();
+					if (error) {
 						char ctext[256];
 						FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
 							NULL,
@@ -82,23 +85,10 @@ namespace alt {
 							ctext,
 							sizeof(ctext),
 							NULL);
-						std::cout << "error:" << ctext << "folder: " << folder << std::endl;
-						//LoadModule(dir);
-
-
-
-						LoadModule(dir);
+						core->LogError(std::string(ctext) + ": " + name);
+						//std::cout << "error:" << ctext << "folder: " << path + "\\" + name << std::endl;
+						return;
 					}
-					else
-					{
-						auto ext = entry.path().extension().string();
-						if (ext != ".dll") continue;
-						LoadModule(entry);
-					}
-
-
-					
-					
 				}
 					
 			}
@@ -109,14 +99,15 @@ namespace alt {
 			
 		}
 
-		void LoadModule(std::filesystem::directory_entry entry) {
+		void LoadModule(std::string entry) {
 			
 			auto fullPath = std::filesystem::path(entry).lexically_normal();
 			auto ext = fullPath.extension().string();
 			auto name = fullPath.filename().replace_extension().string();
 			auto path = fullPath.string();
-			core->LogInfo("Load module: " + path);
+			core->LogInfo("Loading module: " + path);
 			Create(name, path);
+			core->LogInfo("Load module: " + path);
 		}
 
 		void LoadResources() {
@@ -124,51 +115,68 @@ namespace alt {
 			auto resources = core->config->Get("resources");
 			if (!resources->IsList()) return;
 
-
 			std::string resPath = core->GetResourcePath();
-			//
-			//auto list = resources->AsList();
-			//
-			//for (const auto& entry : list) {
-			//	auto name = entry->AsString();
-			//	std::string path = resPath + name;
-			//	auto package = new Package(path + "\\", alt::IPackage::Mode::READ);
-			//	auto configStr = package->ReadConfig();
-			//	if (!configStr.size()) {
-			//		std::cout << "no config: " << name << std::endl;
-			//		continue;
-			//	}
-			//	auto config = LoadResourceConfig(configStr);
-			//	
-			//	auto type = config->Get("type")->AsString();
-			//	auto main = config->Get("main")->AsString();
-			//	auto info = alt::IResource::CreationInfo{ type, name, main, (IPackage*)package };
-			//	core->AddResource(info);
-			//}
 
-			for (const auto& entry : std::filesystem::directory_iterator(resPath)) {
-				auto name = entry.path().filename().string();
-				std::string path = resPath + name;
-				auto package = new Package(path+"/", alt::IPackage::Mode::READ);
-				auto config = LoadResourceConfig(package->ReadConfig());
-				auto type = config->Get("type")->AsString();
-				auto main = config->Get("main")->AsString();
-				auto info = alt::IResource::CreationInfo{ type, name, main, (IPackage*)package };
-				core->AddResource(info);
+			for (const auto& entry : resources->AsList()) {
+				auto name = entry->AsString();
+				LoadResource(name, resPath);
 			}
+		}
+
+		bool LoadResource(std::string name, std::string resPath, std::string parent = "") {
+			auto resource = core->GetResource(name);
+			if (resource) {
+				core->LogInfo("resource loaded: " + name + parent);
+				return true;
+			}
+			std::string path = resPath + name;
+			auto package = new Package(path + "\\", alt::IPackage::Mode::READ);
+			auto configStr = package->ReadConfig();
+			if (!configStr.size()) {
+				std::cout << "no config: " << name << std::endl;
+				return false;
+			}
+			auto config = LoadResourceConfig(configStr);
+			auto deps = config->Get("deps")->AsList();
+			for (const auto& entry : deps) {
+				auto resName = entry->AsString();
+				if (parent == resName) {
+					core->LogError("circular deps: " + name + " from: " + parent);
+					continue;
+				}
+				LoadResource(resName, resPath, name);
+			}
+
+			auto type = config->Get("type")->AsString();
+			auto main = config->Get("main")->AsString();
+			auto info = alt::IResource::CreationInfo{ type, name, main, (IPackage*)package };
+			core->AddResource(info);
+			return true;
 		}
 
 
 		Config::Value::ValuePtr LoadResourceConfig(const std::string &cfgString){
 			std::string errr = "";
 			auto cfg = Config::ConfigBase<TomlConfig>().Parse(cfgString, errr);
+			if (errr.size()) {
+				std::cout << errr;
+			}
 			return cfg;
 		}
 
 		void OnTick() {
+			//auto error = GetLastError();
+			//char ctext[256];
+			//FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,
+			//	NULL,
+			//	error,
+			//	0,
+			//	ctext,
+			//	sizeof(ctext),
+			//	NULL);
+			//std::cout << ctext;
 			if (!core) return;
 			core->OnTick();
-			
 		}
 
 		void dispose() {

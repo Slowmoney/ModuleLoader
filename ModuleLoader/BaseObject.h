@@ -5,7 +5,8 @@ namespace alt {
 	{
 	public:
 		std::unordered_map<std::string, MValue>* metaData = new std::unordered_map<std::string, MValue>();
-		BaseObject(alt::IBaseObject::Type type) : type(type) {};
+		BaseObject(alt::IBaseObject::Type type, int id) : type(type), id(id) {};
+		BaseObject() : type(alt::IBaseObject::Type::OBJECT) {};
 		BaseObject(const BaseObject& rhs) {};
 		virtual alt::IBaseObject::Type GetType() const override {
 			return type;
@@ -39,6 +40,7 @@ namespace alt {
 
 		bool removed = false;
 		alt::IBaseObject::Type type;
+		int id;
 	};
 }
 
