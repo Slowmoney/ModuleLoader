@@ -115,7 +115,7 @@ namespace alt {
 			auto resources = core->config->Get("resources");
 			if (!resources->IsList()) return;
 
-			std::string resPath = core->GetResourcePath();
+			std::vector<std::string> resPath = core->GetResourcePaths();
 
 			for (const auto& entry : resources->AsList()) {
 				auto name = entry->AsString();
@@ -123,13 +123,33 @@ namespace alt {
 			}
 		}
 
-		bool LoadResource(std::string name, std::string resPath, std::string parent = "") {
+		std::string FindResources(std::string name, std::vector<std::string> resPath) {
+			for (const auto& entry : resPath) {
+				
+				auto package = new Package(entry + name + "\\", alt::IPackage::Mode::READ);
+				auto configStr = package->ReadConfig();
+				if (!configStr.size()) {
+					std::cout << "no config: " << name << std::endl;
+					
+				}
+				else {
+					return entry + name;
+				}
+			}
+			return "";
+		}
+
+		bool LoadResource(std::string name, std::vector<std::string> resPath, std::string parent = "") {
 			auto resource = core->GetResource(name);
 			if (resource) {
 				core->LogInfo("resource loaded: " + name + parent);
 				return true;
 			}
-			std::string path = resPath + name;
+			std::string path = FindResources(name, resPath);
+			if (!path.size()) {
+				core->LogDebug("not find resource: " + name);
+				return false;
+			}
 			auto package = new Package(path + "\\", alt::IPackage::Mode::READ);
 			auto configStr = package->ReadConfig();
 			if (!configStr.size()) {
@@ -150,8 +170,13 @@ namespace alt {
 			auto type = config->Get("type")->AsString();
 			auto main = config->Get("main")->AsString();
 			auto info = alt::IResource::CreationInfo{ type, name, main, (IPackage*)package };
-			core->AddResource(info);
+			core->AddResource(info, path);
 			return true;
+		}
+
+		void AddExtraResFolder(std::string path){
+			std::cout << "AddExtraResFolder: " << path << std::endl;
+			core->resourcesFolders.push_back(path);
 		}
 
 
@@ -197,11 +222,24 @@ void my_handler(int s) {
 
 int main(int argc, char** argv)
 {
+	
 #ifdef _WIN32
 	activateVirtualTerminal();
 #endif
 	setlocale(LC_ALL, "Russian");
 	signal(SIGINT, my_handler);
+
+	for (int i = 1; i < argc; i++)
+	{
+		std::string arg = argv[i];
+		if (arg == "--extra-res-folder") {
+			i++;
+			std::string path = argv[i];
+
+			coreFactory->AddExtraResFolder(path);
+		}
+	}
+
 	coreFactory->LoadModules();
 	coreFactory->LoadResources();
 

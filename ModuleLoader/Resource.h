@@ -6,7 +6,7 @@
 namespace alt {
 	class Resource : IResource {
 	public:
-		Resource(ICore* core,  CreationInfo info, std::string path) : core(core), info(info), path(path + info.name) {};
+		Resource(ICore* core,  CreationInfo info, std::string path) : core(core), info(info), path(path) {};
 
 		virtual IScriptRuntime* GetRuntime() const override {
 			return runtime;

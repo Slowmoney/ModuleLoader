@@ -399,7 +399,7 @@ namespace alt {
 		//};
 
 		virtual IVehicle* CreateVehicle(uint32_t model, Position pos, Rotation rot) override {
-			LogDebug("RUN UNIMPLEMENTED CreateVehicle");
+			//LogDebug("RUN UNIMPLEMENTED CreateVehicle");
 			int id = idProvider.Next();
 			auto cs = new alt::Vehicle(id, model, pos, rot);
 		    return (IVehicle*)(cs);
@@ -463,14 +463,14 @@ namespace alt {
 			return (IColShape*)(cs);
 		};
 		virtual IColShape* CreateColShapeRectangle(float x1, float y1, float x2, float y2, float z) override {
-			LogDebug("RUN UNIMPLEMENTED CreateColShapeRectangle");
+			//LogDebug("RUN UNIMPLEMENTED CreateColShapeRectangle");
 			int id = idProvider.Next();
 			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::RECT);
 			return (IColShape*)(cs);
 			//return NULL;
 		};
 		virtual IColShape* CreateColShapePolygon(float minZ, float maxZ, std::vector<Vector2f> points) override {
-			LogDebug("RUN UNIMPLEMENTED CreateColShapePolygon");
+			//LogDebug("RUN UNIMPLEMENTED CreateColShapePolygon");
 			int id = idProvider.Next();
 			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::POLYGON);
 			return (IColShape*)(cs);
@@ -572,13 +572,14 @@ namespace alt {
 			}
 		}
 
-		void AddResource(IResource::CreationInfo info) {
+		void AddResource(IResource::CreationInfo info, std::string path) {
 			if (runtimes->find(info.type) == runtimes->end()) {
 				LogError("UNKNOWN RUNTIME TYPE:" + info.type);
 				return;
 			}
+			
 			IScriptRuntime* runtime = runtimes->at(info.type);
-			Resource* resource = new Resource((alt::ICore*)(this), info, GetResourcePath());
+			Resource* resource = new Resource((alt::ICore*)(this), info, path);
 			resources->insert({ info.name, resource });
 			auto impl = runtime->CreateImpl((IResource*)resource);
 			resource->impl = impl;
@@ -615,9 +616,19 @@ namespace alt {
 			return TomlConfig::Parse(cfg, error);
 		}
 
-		std::string GetResourcePath() {
-			std::string path = getExecutableDir() + "\\" + resourcesFolder;
-			return path;
+		//std::string GetResourcePath() {
+		//	std::string path = getExecutableDir() + "\\" + resourcesFolder;
+		//	return path;
+		//}
+
+		std::vector<std::string> GetResourcePaths() {
+			std::vector<std::string> paths;
+			for (const auto& entry : resourcesFolders) {
+				auto execPath = std::filesystem::path(getExecutableDir());
+				auto path = execPath.append(entry).lexically_normal();
+				paths.push_back({ path.string() + "\\"  });
+			}
+			return paths;
 		}
 
 		std::string GetModulesPath() {
@@ -626,7 +637,8 @@ namespace alt {
 
 		bool started = true;
 		const Config::Value::ValuePtr config = LoadConfig();
-		std::string resourcesFolder = "resources\\";
+		//std::string resourcesFolder = "resources\\";
+		std::vector<std::string> resourcesFolders = std::vector<std::string>({ "./resources" });
 		std::string modulesFolder = "modules\\";
 
 		~Core() {
