@@ -62,6 +62,43 @@ std::string getExecutableDir() {
 }
 
 namespace alt {
+	struct ClothInfo {
+		uint8_t componentId;
+		uint8_t drawableId;
+		uint8_t textureId;
+		uint32_t dlc;
+
+		ClothInfo() = default;
+
+		ClothInfo(uint8_t _componentId, uint8_t _drawableId, uint8_t _textureId, uint32_t _dlc) :
+			componentId(componentId), drawableId(_drawableId), textureId(_textureId), dlc(_dlc) { }
+
+		friend std::ostream& operator<<(std::ostream& stream, const ClothInfo& cloth)
+		{
+			stream << "ClothInfo{ " << (int)cloth.drawableId << ", " << (int)cloth.textureId << ", "
+				<< (int)cloth.componentId << ", " << (int)cloth.dlc << " }";
+			return stream;
+		}
+	};
+	struct PropInfo {
+		uint8_t componentId;
+		uint8_t drawableId;
+		uint8_t textureId;
+		uint32_t dlc;
+
+		PropInfo() = default;
+
+		PropInfo(uint8_t _componentId, uint8_t _drawableId, uint8_t _textureId, uint32_t _dlc) :
+			componentId(componentId), drawableId(_drawableId), textureId(_textureId), dlc(_dlc) { }
+
+		friend std::ostream& operator<<(std::ostream& stream, const PropInfo& cloth)
+		{
+			stream << "PropInfo{ " << (int)cloth.drawableId << ", " << (int)cloth.textureId << ", "
+				<< (int)cloth.componentId << ", " << (int)cloth.dlc << " }";
+			return stream;
+		}
+	};
+
 	class Core : ICore {
 		IdProvider idProvider;
 		std::unordered_map<std::string, MValue>* metaData = new std::unordered_map<std::string, MValue>();
@@ -69,6 +106,13 @@ namespace alt {
 	public:
 		std::unordered_map<std::string, Resource*>* resources = new std::unordered_map<std::string, Resource*>();
 		std::unordered_map<std::string, IScriptRuntime*>* runtimes = new std::unordered_map<std::string, IScriptRuntime*>();
+		std::unordered_map<uint32_t, alt::PedModelInfo> pedModels;
+		std::unordered_map<uint32_t, alt::VehicleModelInfo> vehicleModels;
+
+		std::unordered_map<uint32_t, alt::ClothInfo> clothesInfo;
+		std::unordered_map<uint32_t, alt::PropInfo> propsInfo;
+
+
 		virtual std::string GetVersion() const override {
 			return "CORE v2";
 		};
@@ -269,11 +313,11 @@ namespace alt {
 		//};
 
 		virtual void TriggerLocalEvent(const std::string& ev, MValueArgs args) override {
-			LogDebug("RUN UNIMPLEMENTED TriggerLocalEvent");
+			LogDebug("RUN UNIMPLEMENTED TriggerLocalEvent: " + ev);
 
 		};
 		virtual void TriggerLocalEventOnMain(const std::string& ev, MValueArgs args) override {
-			LogDebug("RUN UNIMPLEMENTED TriggerLocalEventOnMain");
+			LogDebug("RUN UNIMPLEMENTED TriggerLocalEventOnMain: " + ev);
 
 		};
 
@@ -340,12 +384,16 @@ namespace alt {
 		};
 
 		virtual const std::vector<IResource*> GetAllResources() const override {
-			LogDebug("RUN UNIMPLEMENTED GetAllResources");
-			return std::vector<IResource*>();
+			std::vector<IResource*> arr;
+			for (auto it = resources->begin(); it != resources->end(); it++) {
+				auto res = (IResource*)it->second;
+				arr.push_back({ res });
+			}
+			return arr;
 		}
 
 		virtual std::string StringToSHA256(const std::string& str) const override {
-			LogDebug("RUN UNIMPLEMENTED StringToSHA256");
+			LogDebug("RUN UNIMPLEMENTED StringToSHA256: " + str);
 			return "";
 		};
 
@@ -377,15 +425,15 @@ namespace alt {
 		};
 
 		virtual void TriggerClientEvent(IPlayer* target, const std::string& ev, MValueArgs args) override {
-			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent");
+			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent" + ev);
 
 		};
 		virtual void TriggerClientEvent(std::vector<IPlayer*> targets, const std::string& ev, MValueArgs args) override {
-			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent");
+			LogDebug("RUN UNIMPLEMENTED TriggerClientEvent " + ev);
 
 		};
 		virtual void TriggerClientEventForAll(const std::string& ev, MValueArgs args) override {
-			LogDebug("RUN UNIMPLEMENTED TriggerClientEventForAll");
+			LogDebug("RUN UNIMPLEMENTED TriggerClientEventForAll " + ev);
 		};
 
 		//virtual void TriggerClientEventUnreliable(IPlayer* target, const std::string& ev, MValueArgs args)override {
@@ -402,7 +450,7 @@ namespace alt {
 			//LogDebug("RUN UNIMPLEMENTED CreateVehicle");
 			int id = idProvider.Next();
 			auto cs = new alt::Vehicle(id, model, pos, rot);
-		    return (IVehicle*)(cs);
+			return (IVehicle*)(cs);
 			//return NULL;
 		};
 
@@ -457,7 +505,7 @@ namespace alt {
 			return (IColShape*)(cs);
 		};
 		virtual IColShape* CreateColShapeCube(Position pos, Position pos2) override {
-		    //LogDebug("RUN UNIMPLEMENTED CreateColShapeCube");
+			//LogDebug("RUN UNIMPLEMENTED CreateColShapeCube");
 			int id = idProvider.Next();
 			auto cs = new alt::ColShape(id, alt::IColShape::ColShapeType::CUBOID);
 			return (IColShape*)(cs);
@@ -488,7 +536,7 @@ namespace alt {
 		};
 
 		virtual void SetPassword(const std::string& password) const override {
-			LogDebug("RUN UNIMPLEMENTED SetPassword");
+			LogDebug("RUN UNIMPLEMENTED SetPassword " + password);
 		};
 		virtual uint64_t HashServerPassword(const std::string& password) const override {
 			LogDebug("RUN UNIMPLEMENTED HashServerPassword");
@@ -497,6 +545,7 @@ namespace alt {
 
 		virtual void StopServer() override {
 			LogDebug("RUN UNIMPLEMENTED StopServer");
+			throw "StopServer";
 		};
 
 		virtual const VehicleModelInfo& GetVehicleModelByHash(uint32_t hash) const override {
@@ -505,22 +554,10 @@ namespace alt {
 		};
 
 		virtual const cdecl PedModelInfo& GetPedModelByHash(uint32_t hash) const override {
-			LogDebug("RUN UNIMPLEMENTED GetPedModelByHash");
-			std::string sss = "sss";
-			auto data = new PedModelInfo{
-				hash,
-				sss,
-				"type",
-				"dlcName",
-				"defaultUnarmedWeapon",
-				"movementClipSet",
-				std::vector<BoneInfo>()
-			};
-			std::cout << &data << std::endl;
-
-			auto data2 = PedModelInfo(*data);
-			std::cout << &data2 << std::endl;
-			return *data;
+			auto it = pedModels.find(hash);
+			if (it != pedModels.end()) pedModels.at(hash);
+			LogDebug("GetPedModelByHash NOT FOUND: " + std::to_string(hash));
+			return PedModelInfo();
 		};
 
 
@@ -572,12 +609,36 @@ namespace alt {
 			}
 		}
 
+		void AddCloth(uint8_t componentId, uint8_t drawableId, uint8_t textureId, uint32_t dlc) {
+			clothesInfo.insert({ 
+				dlc, 
+				alt::ClothInfo{
+					componentId,
+					drawableId,
+					textureId,
+					dlc
+				}
+			});
+		}
+
+		void AddProp(uint8_t componentId, uint8_t drawableId, uint8_t textureId, uint32_t dlc) {
+			propsInfo.insert({
+				dlc,
+				alt::PropInfo{
+					componentId,
+					drawableId,
+					textureId,
+					dlc
+				}
+			});
+		}
+
 		void AddResource(IResource::CreationInfo info, std::string path) {
 			if (runtimes->find(info.type) == runtimes->end()) {
 				LogError("UNKNOWN RUNTIME TYPE:" + info.type);
 				return;
 			}
-			
+
 			IScriptRuntime* runtime = runtimes->at(info.type);
 			Resource* resource = new Resource((alt::ICore*)(this), info, path);
 			resources->insert({ info.name, resource });
@@ -626,7 +687,7 @@ namespace alt {
 			for (const auto& entry : resourcesFolders) {
 				auto execPath = std::filesystem::path(getExecutableDir());
 				auto path = execPath.append(entry).lexically_normal();
-				paths.push_back({ path.string() + "\\"  });
+				paths.push_back({ path.string() + "\\" });
 			}
 			return paths;
 		}
@@ -635,11 +696,16 @@ namespace alt {
 			return getExecutableDir() + "\\" + modulesFolder;
 		}
 
+		std::string GetDataPath() {
+			return getExecutableDir() + "\\" + dataFolder;
+		}
+
 		bool started = true;
 		const Config::Value::ValuePtr config = LoadConfig();
 		//std::string resourcesFolder = "resources\\";
 		std::vector<std::string> resourcesFolders = std::vector<std::string>({ "./resources" });
 		std::string modulesFolder = "modules\\";
+		std::string dataFolder = "data\\";
 
 		~Core() {
 			std::cout << "~Core" << std::endl;

@@ -149,6 +149,8 @@
     <ClInclude Include="Core.h" />
     <ClInclude Include="deps\toml\toml.hpp" />
     <ClInclude Include="deps\toml\TomlConfig.h" />
+    <ClInclude Include="DlcResource.h" />
+    <ClInclude Include="DlcScriptRuntime.h" />
     <ClInclude Include="IdProvider.h" />
     <ClInclude Include="LocalStorage.h">
       <DeploymentContent>true</DeploymentContent>
