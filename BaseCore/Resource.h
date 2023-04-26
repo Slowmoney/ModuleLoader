@@ -3,10 +3,11 @@
 #include <wtypes.h>
 #include <iostream>
 #include <deps/ConfigBase.h>
+#include "NativeContext.h"
 namespace alt {
 	class Resource : IResource {
 	public:
-		Resource(ICore* core,  CreationInfo info, std::string path) : core(core), info(info), path(path) {};
+		Resource(ICore* core, CreationInfo info, std::string path) : core(core), info(info), path(path) {};
 
 		virtual IScriptRuntime* GetRuntime() const override {
 			return runtime;
@@ -21,14 +22,14 @@ namespace alt {
 		virtual const std::string& GetType() const override {
 			return info.type;
 		};
-		virtual const std::string& GetName() const override { 
-			return info.name; 
+		virtual const std::string& GetName() const override {
+			return info.name;
 		};
-		virtual const std::string& GetPath() const override { 
+		virtual const std::string& GetPath() const override {
 			return path;
 		};
-		virtual const std::string& GetMain() const override { 
-			return info.main; 
+		virtual const std::string& GetMain() const override {
+			return info.main;
 		};
 
 		virtual IPackage* GetPackage() const override {
@@ -53,13 +54,13 @@ namespace alt {
 			return Array<std::string>();
 		}
 
-		virtual const Array<Permission> GetRequiredPermissions() const override{
+		virtual const Array<Permission> GetRequiredPermissions() const override {
 			return Array<Permission>();
 		}
 		virtual const Array<Permission> GetOptionalPermissions() const override {
 			return Array<Permission>();
 		}
-
+#ifdef ALT_SERVER_API
 		virtual std::string GetClientType() const override {
 			core->LogDebug("RUN UNIMPLEMENTED GetClientType");
 			return "";
@@ -79,7 +80,46 @@ namespace alt {
 			core->LogDebug("RUN UNIMPLEMENTED GetMatchedFiles");
 			return std::set<std::string>();
 		}
+#endif // ALT_SERVER_API
+#ifdef ALT_CLIENT_API
+		virtual void EnableNatives() override {
 
+		};
+		[[nodiscard]]
+		//virtual std::shared_ptr<INative::Context> CreateNativesContext() const {
+		//	auto ctx = std::make_shared<NativeContext>();
+		//	INative::Context* ptr = (INative::Context*)ctx.get();
+		//	return std::make_shared<INative::Context>(ptr);
+		//};
+		[[nodiscard]]
+		virtual std::shared_ptr<INative::Scope> PushNativesScope() override {
+			return std::make_shared<INative::Scope>();
+		};
+
+		virtual ILocalStorage* GetLocalStorage() {
+			return NULL;
+		};
+
+		virtual void AddGxtText(uint32_t hash, const std::string& text) {
+
+		};
+		virtual void RemoveGxtText(uint32_t hash) {
+
+		};
+		virtual const std::string& GetGxtText(uint32_t hash) {
+			return "";
+		};
+		virtual bool ToggleCursor(bool state) {
+			return false;
+		};
+		virtual void ToggleGameControls(bool state) {}
+		virtual bool CursorVisible() {
+			return false;
+		};
+		virtual bool GameControlsActive() {
+			return false;
+		};
+#endif
 		bool Start() {
 			try
 			{

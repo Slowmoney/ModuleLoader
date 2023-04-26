@@ -35,6 +35,8 @@ namespace alt {
 			return removed;
 		};
 
+
+
 		bool removed = false;
 		alt::IBaseObject::Type type = alt::IBaseObject::Type::COLSHAPE;
 		int id;
@@ -61,6 +63,14 @@ namespace alt {
 		virtual uint32_t GetID() const {
 			return id;
 		}
+
+		virtual uint32_t GetScriptID() const {
+			return 0;
+		}
+
+		virtual bool IsRemote() const {
+			return false;
+		};
 
 		virtual bool IsGlobal() const {
 			return false;

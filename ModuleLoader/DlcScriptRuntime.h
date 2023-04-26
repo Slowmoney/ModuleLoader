@@ -1,5 +1,8 @@
 #pragma once
-#include <SDK.h>
+/*
+#include <string>
+#include <filesystem>
+#include <iostream>
 
 struct DlcFile {
 	std::string fullPath;
@@ -65,7 +68,8 @@ uint16_t ntohl(uint16_t net) {
 	return ((uint16_t)data[1] << 0)
 		| ((uint16_t)data[0] << 8);
 }
-
+*/
+/*
 struct ResourcePagesInfo {
 	uint32_t Unknown_0h;
 	uint32_t Unknown_4h;
@@ -112,7 +116,8 @@ struct ResourceFileBase {
 	}
 };
 
-
+*/
+/*
 struct Meta: ResourceFileBase {
 	int32_t Unknown_10h;
 	int16_t Unknown_14h;
@@ -202,6 +207,8 @@ struct MetaStructureInfo {
 
 	}
 };
+*/
+/*
 #define SWAP_INT32(x) (((x) >> 24) | (((x) & 0x00FF0000) >> 8) | (((x) & 0x0000FF00) << 8) | ((x) << 24))
 namespace alt {
 	class DlcIResourceImpl : public IResource::Impl {
@@ -369,6 +376,6 @@ namespace alt {
 			return _Instance;
 		}
 	};
-}
+}*/
 
 

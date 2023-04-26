@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConfigBase.h"
 #include "toml.hpp"
+#include <SDK.h>
 
 class TomlConfig : public Config::ConfigBase<TomlConfig>
 {

@@ -386,57 +386,57 @@ namespace alt {
 		virtual float GetWheelSpeed() const { return NULL; }
 		virtual uint16_t GetCurrentGear() const { return NULL; }
 		virtual float GetCurrentRPM() const { return NULL; }
-		virtual Vector3f GetSpeedVector() const { return NULL; }
+		virtual Vector3f GetSpeedVector() const { }
 		virtual uint16_t GetMaxGear() const { return NULL; }
 
-		virtual void SetCurrentGear(uint16_t currentGear) { return NULL; }
-		virtual void SetMaxGear(uint16_t gearMax) { return NULL; }
+		virtual void SetCurrentGear(uint16_t currentGear) { }
+		virtual void SetMaxGear(uint16_t gearMax) { }
 
 		virtual bool IsHandlingModified() const { return NULL; }
 		virtual std::shared_ptr<alt::IHandlingData> GetHandling() const { return NULL; }
-		virtual void ResetHandling() { return NULL; }
-		virtual void ReplaceHandling() { return NULL; }
+		virtual void ResetHandling() { }
+		virtual void ReplaceHandling() { }
 
 		virtual uint8_t GetLightsIndicator() const { return NULL; }
-		virtual void SetLightsIndicator(uint8_t lightsIndicatorFlag) { return NULL; }
+		virtual void SetLightsIndicator(uint8_t lightsIndicatorFlag) { }
 
 		virtual uint8_t GetSeatCount() const { return NULL; }
 		virtual uint8_t GetOccupiedSeatsCount() const { return NULL; }
 
-		virtual void ToggleTaxiLight(bool state) { return NULL; }
+		virtual void ToggleTaxiLight(bool state) { }
 		virtual bool IsTaxiLightOn() const { return NULL; }
 
 		virtual float GetWheelCamber(uint8_t wheel) const { return NULL; }
-		virtual void SetWheelCamber(uint8_t wheel, float value) { return NULL; }
+		virtual void SetWheelCamber(uint8_t wheel, float value) { }
 		virtual float GetWheelTrackWidth(uint8_t wheel) const { return NULL; }
-		virtual void SetWheelTrackWidth(uint8_t wheel, float value) { return NULL; }
+		virtual void SetWheelTrackWidth(uint8_t wheel, float value) { }
 		virtual float GetWheelHeight(uint8_t wheel) const { return NULL; }
-		virtual void SetWheelHeight(uint8_t wheel, float value) { return NULL; }
+		virtual void SetWheelHeight(uint8_t wheel, float value) { }
 		virtual float GetWheelTyreRadius(uint8_t wheel) const { return NULL; }
-		virtual void SetWheelTyreRadius(uint8_t wheel, float value) { return NULL; }
+		virtual void SetWheelTyreRadius(uint8_t wheel, float value) { }
 		virtual float GetWheelRimRadius(uint8_t wheel) const { return NULL; }
-		virtual void SetWheelRimRadius(uint8_t wheel, float value) { return NULL; }
+		virtual void SetWheelRimRadius(uint8_t wheel, float value) { }
 		virtual float GetWheelTyreWidth(uint8_t wheel) const { return NULL; }
-		virtual void SetWheelTyreWidth(uint8_t wheel, float value) { return NULL; }
+		virtual void SetWheelTyreWidth(uint8_t wheel, float value) { }
 		virtual uint32_t GetWheelSurfaceMaterial(uint8_t wheel) const { return NULL; }
 
 		virtual float GetEngineTemperature() const { return NULL; }
-		virtual void SetEngineTemperature(float value) { return NULL; }
+		virtual void SetEngineTemperature(float value) { }
 		virtual float GetFuelLevel() const { return NULL; }
-		virtual void SetFuelLevel(float value) { return NULL; }
+		virtual void SetFuelLevel(float value) {  }
 		virtual float GetOilLevel() const { return NULL; }
-		virtual void SetOilLevel(float value) { return NULL; }
+		virtual void SetOilLevel(float value) { }
 		virtual bool GetEngineLightState() const { return NULL; }
-		virtual void SetEngineLightState(bool state) { return NULL; }
+		virtual void SetEngineLightState(bool state) { }
 		virtual bool GetAbsLightState() const { return NULL; }
-		virtual void SetAbsLightState(bool state) { return NULL; }
+		virtual void SetAbsLightState(bool state) { }
 		virtual bool GetPetrolLightState() const { return NULL; }
-		virtual void SetPetrolLightState(bool state) { return NULL; }
+		virtual void SetPetrolLightState(bool state) { }
 		virtual bool GetOilLightState() const { return NULL; }
-		virtual void SetOilLightState(bool state) { return NULL; }
+		virtual void SetOilLightState(bool state) { }
 		virtual bool GetBatteryLightState() const { return NULL; }
-		virtual void SetBatteryLightState(bool state) { return NULL; }
-		virtual void ResetDashboardLights() { return NULL; }
+		virtual void SetBatteryLightState(bool state) { }
+		virtual void ResetDashboardLights() { }
 #endif // ALT_CLIENT_API
 
 		int32_t dimension = 0;

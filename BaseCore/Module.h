@@ -1,8 +1,9 @@
 #pragma once
 #include <wtypes.h>
+#include <libloaderapi.h>
 #include <SDK.h>
-#include <version/version.h>
 #include <winerror.h>
+#include <version/version.h>
 
 DWORD WINAPI thread2(LPVOID t)
 {
