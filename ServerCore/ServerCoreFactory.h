@@ -567,11 +567,22 @@ public:
 		core->LogDebug("LOAD VEHICLE MODS INFO : " + std::to_string(core->modKitInfos.size()));
 	}
 
+	void Stop() {
+		core->StopServer();
+		dispose();
+	}
+
+	void Start() {
+		core->eventQueue->push_back({ new alt::CServerStartedEvent() });
+	}
+
 	void LoadData() {
 		LoadClothesData();
 		LoadPedModels();
 		LoadVehicleModels();
 		//LoadVehicleModsData();
+
+		core->started = true;
 	}
 
 	void OnTick() {
@@ -587,6 +598,10 @@ public:
 		//std::cout << ctext;
 		if (!core) return;
 		core->OnTick();
+	}
+
+	uint32_t OnClientConnect() {
+		return this->core->CreatePlayer();
 	}
 
 	void dispose() {

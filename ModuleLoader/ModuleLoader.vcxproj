@@ -74,7 +74,7 @@
     <ExternalIncludePath>C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\deps;C:\Users\Yaroslav\source\repos\ModuleLoader\SDK;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExternalIncludePath>C:\Users\Yaroslav\source\repos\ModuleLoader\SDK;C:\Users\Yaroslav\source\repos\ModuleLoader\SDK\deps;C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\deps\toml;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\imgui\backends;C:\Users\Yaroslav\source\repos\ModuleLoader\SDK;C:\Users\Yaroslav\source\repos\ModuleLoader\SDK\deps;C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\deps\toml;C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\imgui;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -131,20 +131,38 @@
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\Users\Yaroslav\source\repos\ModuleLoader\ClientCore;C:\Users\Yaroslav\source\repos\ModuleLoader\BaseCore;C:\Users\Yaroslav\source\repos\ModuleLoader\ServerCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\imgui\backends;C:\Users\Yaroslav\source\repos\ModuleLoader\ModuleLoader\imgui;C:\Users\Yaroslav\source\repos\ModuleLoader\ClientCore;C:\Users\Yaroslav\source\repos\ModuleLoader\BaseCore;C:\Users\Yaroslav\source\repos\ModuleLoader\ServerCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TranslateIncludes>false</TranslateIncludes>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+	  <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d10.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ModuleLoader.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ALT_SERVER_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+  </ItemGroup>
+   <ItemGroup>
+    <ClInclude Include=".\imgui\imconfig.h" />
+    <ClInclude Include=".\imgui\imgui.h" />
+    <ClInclude Include=".\imgui\imgui_internal.h" />
+    <ClInclude Include=".\imgui\backends\imgui_impl_dx10.h" />
+    <ClInclude Include=".\imgui\backends\imgui_impl_win32.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include=".\imgui\imgui.cpp" />
+    <ClCompile Include=".\imgui\imgui_demo.cpp" />
+    <ClCompile Include=".\imgui\imgui_draw.cpp" />
+    <ClCompile Include=".\imgui\imgui_tables.cpp" />
+    <ClCompile Include=".\imgui\imgui_widgets.cpp" />
+    <ClCompile Include=".\imgui\backends\imgui_impl_dx10.cpp" />
+    <ClCompile Include=".\imgui\backends\imgui_impl_win32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DlcResource.h" />

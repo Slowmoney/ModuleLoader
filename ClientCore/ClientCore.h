@@ -387,6 +387,16 @@ class ClientCore : public BaseCore
 	};
 
 	virtual void InternalAddCefBootstrap(const std::string& bootstrap) {};
+
+	public:
+	uint32_t CreateLocalPlayer(uint32_t clientId) {
+		this->LogDebug("CreateLocalPlayer: " + std::to_string(clientId));
+		auto player = new alt::Player(this, clientId);
+
+		entities->insert({ clientId, player });
+
+		return clientId;
+	}
 };
 
 

@@ -3,6 +3,7 @@
 #include "Package.h"
 #include "Module.h"
 #include <filesystem>
+#include "events/CServerStartedEvent.h"
 
 std::string getExecutablePath() {
 	char rawPathName[MAX_PATH];
@@ -37,29 +38,58 @@ public:
 	};
 
 	virtual alt::IResource* StartResource(const std::string& name) override {
-		LogDebug("RUN UNIMPLEMENTED StartResource");
-		return (alt::IResource*)resources->at(name);
+		//LogDebug("RUN UNIMPLEMENTED StartResource");
+		alt::Resource* resource = (alt::Resource*)resources->at(name);
+		resource->Start();
+		if (!resource->IsStarted()) {
+			LogError("ERROR START RESOURCE " + name, (alt::IResource*)resource);
+		}
+		else {
+			LogInfo("Stared resource: " + name, (alt::IResource*)resource);
+			eventQueue->push_back({ new alt::CResourceStartEvent((alt::IResource*)resource) });
+		}
+
+		return (alt::IResource*)resource;
 	};
 
 	virtual void StopResource(const std::string& name) override {
-		LogDebug("RUN UNIMPLEMENTED StopResource");
-		resources->at(name);
+		//LogDebug("RUN UNIMPLEMENTED StopResource");
+		alt::IResource* resource = (alt::IResource*)resources->at(name);
+		eventQueue->push_back({ new alt::CResourceStopEvent(resource) });
 	};
 	virtual void RestartResource(const std::string& name) override {
-		LogDebug("RUN UNIMPLEMENTED RestartResource");
-		resources->at(name);
+		//LogDebug("RUN UNIMPLEMENTED RestartResource");
+		StopResource(name);
+		StartResource(name);
 	};
 
 	virtual void TriggerClientEvent(alt::IPlayer* target, const std::string& ev, alt::MValueArgs args) override {
-		LogDebug("RUN UNIMPLEMENTED TriggerClientEvent" + ev);
+		//LogDebug("RUN UNIMPLEMENTED TriggerClientEvent " + ev);
 
+		alt::Player* player = (alt::Player*)target;
+
+		const std::shared_ptr<alt::IPlayer>& ptr = std::make_shared<alt::Player>(*player);
+		//const std::shared_ptr<alt::Player>& ptr = std::make_shared<alt::Player>(target);
+		eventQueue->push_back({ new alt::CClientScriptEvent(ptr, ev, args)});
 	};
 	virtual void TriggerClientEvent(std::vector<alt::IPlayer*> targets, const std::string& ev, alt::MValueArgs args) override {
-		LogDebug("RUN UNIMPLEMENTED TriggerClientEvent " + ev);
+		//LogDebug("RUN UNIMPLEMENTED TriggerClientEvent " + ev);
 
+
+		for (size_t i = 0; i < targets.size(); i++)
+		{
+			auto target = targets.at(i);
+			TriggerClientEvent(target, ev, args);
+		}
 	};
 	virtual void TriggerClientEventForAll(const std::string& ev, alt::MValueArgs args) override {
-		LogDebug("RUN UNIMPLEMENTED TriggerClientEventForAll " + ev);
+		//LogDebug("RUN UNIMPLEMENTED TriggerClientEventForAll " + ev);
+		std::vector<alt::IPlayer*> targets = GetPlayers();
+		for (size_t i = 0; i < targets.size(); i++)
+		{
+			auto target = targets.at(i);
+			TriggerClientEvent(target, ev, args);
+		}
 	};
 
 	void TriggerClientEventUnreliable(alt::IPlayer* target, const std::string& ev, alt::MValueArgs args) {
@@ -171,7 +201,7 @@ public:
 
 	virtual void StopServer() override {
 		LogDebug("RUN UNIMPLEMENTED StopServer");
-		throw "StopServer";
+		//throw "StopServer";
 	};
 
 	virtual const alt::VehicleModelInfo& GetVehicleModelByHash(uint32_t hash) const override {
@@ -252,13 +282,7 @@ public:
 		auto impl = runtime->CreateImpl((alt::IResource*)resource);
 		resource->impl = impl;
 		resource->runtime = runtime;
-		resource->Start();
-		if (!resource->IsStarted()) {
-			LogError("ERROR START RESOURCE " + info.type, (alt::IResource*)resource);
-		}
-		else {
-			LogInfo("Stared resource: " + info.name, (alt::IResource*)resource);
-		}
+		this->StartResource(info.name);
 	}
 
 	void AddCloth(uint8_t componentId, uint8_t drawableId, uint8_t textureId, uint32_t dlc) {
@@ -287,6 +311,23 @@ public:
 
 	void AddModKit(BaseCore::VehicleModKitInfo modKit) {
 		modKitInfos.insert({ modKit.modKitId, modKit });
+	}
+
+	uint32_t CreatePlayer() {
+		uint32_t clientId = idProvider.Next();
+		auto player = new alt::Player(this, clientId);
+
+		entities->insert({ clientId, player });
+
+		const std::shared_ptr<alt::Player>& ptr = std::make_shared<alt::Player>(*player);
+
+		OnCreateBaseObject(player);
+
+		CEvent* event = new CPlayerConnectEvent(ptr);
+
+		eventQueue->push_back({ event });
+
+		return clientId;
 	}
 };
 

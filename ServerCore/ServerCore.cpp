@@ -20,12 +20,29 @@ EXPORT int coreMain(std::vector<std::string>* args)
 		}
 	}
 
+	serverCoreFactory->Start();
 	serverCoreFactory->LoadData();
 	serverCoreFactory->LoadModules();
 	serverCoreFactory->LoadResources();
 
-	while (true) {
+	//while (serverCoreFactory->core) {
+	//	serverCoreFactory->OnTick();
+	//}
+    return 0;
+}
+
+EXPORT int Stop() {
+	serverCoreFactory->Stop();
+	return 0;
+}
+
+EXPORT uint32_t OnClientConnect() {
+	std::cout << "OnClientConnect: " << std::endl;
+	return serverCoreFactory->OnClientConnect();
+}
+
+EXPORT void OnTick() {
+	if (serverCoreFactory->core) {
 		serverCoreFactory->OnTick();
 	}
-    return 0;
 }
